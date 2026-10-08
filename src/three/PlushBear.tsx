@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import { BOW_POS, buildBear, buildBow, buildCollar, COLLAR, NECK } from './bearGeometry'
 import { createFurMaterial, createFurUniforms, type FurUniforms, type PartUniforms } from './furMaterial'
-import { stepYaw, type StageController } from './stage'
+import { stepYaw, useStageClock, type StageController } from './stage'
 
 export interface BearLook {
   fur: string
@@ -190,9 +190,9 @@ export function PlushBear({
     onTap(e.nativeEvent.clientX, e.nativeEvent.clientY)
   }
 
-  useFrame((state, rawDt) => {
-    const dt = Math.min(rawDt, 1 / 20)
-    const t = state.clock.elapsedTime
+  const clock = useStageClock()
+  useFrame(() => {
+    const { t, dt, resumed } = clock()
     const a = anim.current
     const now = performance.now()
     const start = (g: Gesture) => {
@@ -206,7 +206,7 @@ export function PlushBear({
       a.started = true
       a.queued = { g: 'wave', at: t + 0.7, say: 'oi!' }
       a.nextIdle = t + 9
-    } else if (rawDt > 0.6 && !a.queued) {
+    } else if (resumed && !a.queued) {
       a.queued = { g: 'wave', at: t + 0.35, say: pick(BACK_LINES) }
       a.nextIdle = t + 9
     }

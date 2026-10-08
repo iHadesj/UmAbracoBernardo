@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import { buildBow } from './bearGeometry'
 import { FILL_DIR, KEY_DIR } from './furMaterial'
-import { stepYaw, type StageController } from './stage'
+import { stepYaw, useStageClock, type StageController } from './stage'
 import { useUI } from '../store/ui'
 import { FONT_SETS, type FontSetId } from '../theme/styles'
 
@@ -179,9 +179,9 @@ export function BubbleBalloon({ look, ctl, onTap }: { look: BubbleLook; ctl: Sta
     onTap(e.nativeEvent.clientX, e.nativeEvent.clientY)
   }
 
-  useFrame((state, rawDt) => {
-    const dt = Math.min(rawDt, 1 / 20)
-    const t = state.clock.elapsedTime
+  const clock = useStageClock()
+  useFrame(() => {
+    const { t, dt } = clock()
     const a = anim.current
     if (ctl.pendingTap) {
       ctl.pendingTap = false

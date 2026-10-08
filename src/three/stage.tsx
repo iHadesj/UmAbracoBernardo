@@ -100,6 +100,23 @@ function useStageGestures(c: StageController, wrap: RefObject<HTMLDivElement | n
   }
 }
 
+/**
+ * Relógio próprio do palco. O `state.clock` do R3F volta a zero quando o frameloop
+ * sai de 'never' (canvas voltou à tela): o tempo do último abraço ficava no "futuro",
+ * o squash explodia e o urso esticava todo. Este tempo só avança, e para enquanto pausado.
+ */
+export function useStageClock() {
+  const c = useRef({ t: 0, last: 0 })
+  return () => {
+    const now = performance.now()
+    const gap = c.current.last ? (now - c.current.last) / 1000 : 1 / 60
+    c.current.last = now
+    const dt = clamp(gap, 1 / 240, 1 / 20)
+    c.current.t += dt
+    return { t: c.current.t, dt, resumed: gap > 0.6 }
+  }
+}
+
 /** Integra o giro: inércia ao soltar e um balanço suave quando ninguém mexe. */
 export function stepYaw(c: StageController, t: number, dt: number, sway = 0.35) {
   if (!c.dragging) {
