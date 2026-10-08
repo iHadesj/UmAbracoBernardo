@@ -1,0 +1,613 @@
+/* ============ Home (editorial) ============ */
+
+.home {
+  padding-bottom: 0;
+}
+
+.sec-title {
+  font-family: var(--font-display);
+  font-weight: var(--display-light);
+  font-size: clamp(30px, 8vw, 50px);
+  line-height: 1.06;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.sentence {
+  font-family: var(--font-display);
+  font-weight: var(--display-light);
+  font-size: clamp(27px, 7.4vw, 48px);
+  line-height: 1.3;
+  letter-spacing: -0.012em;
+  color: var(--ink);
+  max-width: 17em;
+  text-wrap: pretty;
+}
+
+.sentence em {
+  font-style: var(--em-style);
+  color: var(--red);
+}
+
+.sentence--sm {
+  font-size: clamp(24px, 6.4vw, 40px);
+}
+
+.link-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0;
+  color: var(--ink);
+  font-weight: 500;
+  font-size: 15px;
+  border-bottom: 1px solid currentColor;
+  transition: gap 0.25s var(--ease), color 0.25s;
+}
+
+.link-arrow:hover {
+  gap: 10px;
+  color: var(--red);
+}
+
+/* ---------- 1. Palco ---------- */
+.hero2 {
+  padding-top: 14px;
+}
+
+.hero2__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--ln);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mu);
+}
+
+.hero2__stage {
+  position: relative;
+  height: min(122vw, 540px);
+  overflow: hidden;
+}
+
+/* como capa de revista: a palavra no alto e a cabeça do urso cobrindo a parte de baixo dela */
+.hero2__word {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 3%;
+  pointer-events: none;
+}
+
+.hero2__um {
+  position: relative;
+  z-index: 1;
+  align-self: flex-start;
+  margin: 0 0 -0.42em 7%;
+  font-family: var(--font-hand);
+  font-size: clamp(34px, 10vw, 72px);
+  color: var(--red);
+}
+
+.hero2__abraco {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-weight: var(--display-light);
+  font-style: var(--em-style);
+  font-size: clamp(104px, 32vw, 340px);
+  line-height: 0.9;
+  letter-spacing: -0.045em;
+  white-space: nowrap;
+  color: color-mix(in srgb, var(--red) 24%, var(--bg));
+  transform-origin: 50% 60%;
+}
+
+.hero2__bear {
+  position: absolute;
+  inset: 17% 0 0;
+  z-index: 1;
+}
+
+.hero2__bear .stage-fallback .art {
+  padding: 10% 20% 2%;
+}
+
+.hero2__touch {
+  position: absolute;
+  z-index: 2;
+  right: 4%;
+  top: 56%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-family: var(--font-hand);
+  font-size: calc(25px * var(--hand-scale));
+  color: var(--red);
+  pointer-events: none;
+}
+
+.hero2__touch svg {
+  margin-right: 22px;
+}
+
+.hero2__touch--count {
+  top: auto;
+  bottom: 18px;
+  right: 20px;
+  flex-direction: row;
+  font-size: calc(22px * var(--hand-scale));
+}
+
+.hero2__touch--count span {
+  display: inline-block;
+}
+
+.hero2__foot {
+  display: grid;
+  gap: 22px;
+  padding-top: 6px;
+}
+
+.hero2__title {
+  font-size: clamp(25px, 6.8vw, 40px);
+  font-weight: var(--display-light);
+  line-height: 1.2;
+  letter-spacing: -0.012em;
+  max-width: 15em;
+}
+
+.hero2__ctas {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  flex-wrap: wrap;
+}
+
+/* ---------- 2. Frase + sugestões ---------- */
+.gift {
+  margin-top: 88px;
+}
+
+.pick-inline {
+  position: relative;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.08em;
+  color: var(--red);
+  font-style: var(--em-style);
+  white-space: nowrap;
+  border-bottom: 1.5px dashed color-mix(in srgb, var(--red) 55%, transparent);
+  line-height: 1.12;
+  overflow: hidden;
+  vertical-align: bottom;
+  cursor: pointer;
+}
+
+.pick-inline svg {
+  width: 0.42em;
+  height: 0.42em;
+  flex: none;
+  align-self: center;
+}
+
+.pick-inline select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  opacity: 0;
+  font-size: 16px;
+  cursor: pointer;
+  appearance: none;
+}
+
+.picks {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 34px 16px;
+  margin-top: 34px;
+}
+
+.pick--big {
+  grid-column: 1 / -1;
+}
+
+.pick__link {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pick__frame {
+  aspect-ratio: 4 / 4.5;
+  border-radius: 50% 50% 16px 16px / 34% 34% 16px 16px;
+  background: var(--arch);
+  overflow: hidden;
+}
+
+.pick--big .pick__frame {
+  aspect-ratio: 4 / 3.3;
+  border-radius: 46% 46% 18px 18px / 40% 40% 18px 18px;
+}
+
+.pick__frame .art {
+  padding: 6% 6% 0;
+}
+
+.pick__name {
+  margin-top: 8px;
+  font-size: 18px;
+  font-weight: var(--display-weight);
+  line-height: 1.15;
+}
+
+.pick--big .pick__name {
+  font-size: 24px;
+}
+
+.pick__desc {
+  font-size: 14px;
+  font-weight: 300;
+  color: var(--mu);
+}
+
+/* etiqueta de papel kraft pendurada por um barbante */
+.price-tag {
+  position: absolute;
+  top: 10%;
+  right: 4px;
+  z-index: 3;
+  padding: 6px 12px 6px 20px;
+  background: #ead6b4;
+  color: #3a2418;
+  font-family: var(--font-display);
+  font-size: 15px;
+  clip-path: polygon(11px 0, 100% 0, 100% 100%, 11px 100%, 0 50%);
+  transform-origin: 6px 50%;
+  filter: drop-shadow(0 6px 8px rgba(60, 30, 10, 0.18));
+}
+
+.price-tag::before {
+  content: '';
+  position: absolute;
+  left: 7px;
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  margin-top: -2.5px;
+  border-radius: 50%;
+  background: var(--bg);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.3);
+}
+
+.pick--big .price-tag {
+  top: 14%;
+  right: 6%;
+  font-size: 18px;
+}
+
+.browse {
+  margin-top: 30px;
+  font-size: 16px;
+  font-weight: 300;
+  color: var(--mu);
+}
+
+.browse a {
+  color: var(--ink);
+  border-bottom: 1px solid var(--ln);
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.browse a:hover {
+  color: var(--red);
+  border-color: var(--red);
+}
+
+/* ---------- 3. Bilhete ---------- */
+.note {
+  margin-top: 110px;
+  display: grid;
+  gap: 26px;
+}
+
+.note__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.note__stage {
+  perspective: 900px;
+  padding: 0 6px;
+}
+
+.note__card {
+  position: relative;
+  padding: 26px 24px 18px 28px;
+  border-radius: 4px;
+  color: #3d2418;
+  background-color: #ecdab9;
+  background-image: repeating-linear-gradient(transparent 0 35px, rgba(130, 85, 40, 0.16) 35px 36px),
+    radial-gradient(circle at 20% 10%, rgba(255, 255, 255, 0.35), transparent 50%);
+  background-position: 0 30px, 0 0;
+  box-shadow: 0 28px 44px -28px rgba(80, 40, 20, 0.55), 0 2px 5px rgba(80, 40, 20, 0.12);
+  transform-origin: 50% 0;
+}
+
+.note__hole {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--bg);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.note__to,
+.note__from {
+  display: block;
+  font-family: var(--font-hand);
+  font-size: 21px;
+  opacity: 0.75;
+}
+
+.note__from {
+  text-align: right;
+  font-size: 23px;
+  opacity: 1;
+}
+
+.note__card textarea {
+  width: 100%;
+  min-height: 144px;
+  border: 0;
+  outline: none;
+  resize: none;
+  background: transparent;
+  color: inherit;
+  font-family: var(--font-hand);
+  font-size: 25px;
+  line-height: 36px;
+}
+
+.note__card textarea::placeholder {
+  color: rgba(61, 36, 24, 0.45);
+}
+
+.note__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* ---------- 4. Entrega ---------- */
+.deliver {
+  margin-top: 110px;
+}
+
+.deliver__ask {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  margin-top: 22px;
+  font-size: 18px;
+  font-weight: 300;
+  color: var(--mu);
+}
+
+.inline-input {
+  width: 6.4em;
+  padding: 2px 0;
+  border: 0;
+  border-bottom: 1.5px solid var(--ink);
+  background: transparent;
+  outline: none;
+  font-family: var(--font-display);
+  font-weight: var(--display-light);
+  font-size: 28px;
+  color: var(--ink);
+  transition: border-color 0.2s;
+}
+
+.inline-input:focus {
+  border-color: var(--red);
+}
+
+.deliver__result {
+  margin-top: 12px;
+  font-size: 15.5px;
+  font-weight: 300;
+  color: var(--mu);
+}
+
+.deliver__result b {
+  color: var(--ink);
+}
+
+/* ---------- 5. Mural ---------- */
+.mural {
+  margin-top: 110px;
+}
+
+.mural__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.mural__track {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+  scroll-snap-type: x proximity;
+  padding: 30px 28px 44px;
+}
+
+.mural__track::-webkit-scrollbar {
+  display: none;
+}
+
+.polaroid {
+  position: relative;
+  flex: none;
+  width: 188px;
+  margin: 0 -14px 0 0;
+  padding: 10px 10px 0;
+  background: #fffefb;
+  box-shadow: 0 20px 32px -20px rgba(40, 20, 20, 0.45), 0 1px 3px rgba(0, 0, 0, 0.08);
+  scroll-snap-align: center;
+}
+
+.polaroid__img {
+  aspect-ratio: 1;
+  background: linear-gradient(170deg, #fff1ee, #f5dcd7);
+  overflow: hidden;
+}
+
+.polaroid__img .art {
+  padding: 6% 8% 0;
+}
+
+.polaroid figcaption {
+  padding: 9px 2px 13px;
+  text-align: center;
+  font-family: var(--font-hand);
+  font-size: 19px;
+  color: #4a3434;
+}
+
+/* ---------- 6. Despedida ---------- */
+.signoff {
+  margin-top: 90px;
+  padding: 48px 20px calc(var(--nav-h) + 56px + var(--safe-b));
+  border-top: 1px solid var(--ln);
+  text-align: center;
+}
+
+.signoff__big {
+  font-family: var(--font-display);
+  font-weight: var(--display-light);
+  font-style: var(--em-style);
+  font-size: clamp(48px, 14vw, 128px);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+
+.signoff__name {
+  margin-top: -0.05em;
+  font-family: var(--font-hand);
+  font-size: clamp(40px, 11vw, 86px);
+  color: var(--red);
+}
+
+.signoff__links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px 20px;
+  margin-top: 30px;
+  font-size: 14.5px;
+}
+
+.signoff__links a {
+  border-bottom: 1px solid var(--ln);
+  padding-bottom: 2px;
+}
+
+.signoff small {
+  display: block;
+  margin-top: 22px;
+  font-size: 12px;
+  color: var(--mu);
+}
+
+/* ---------- desktop ---------- */
+@media (min-width: 960px) {
+  .hero2__stage {
+    height: 640px;
+  }
+
+  .hero2__word {
+    padding-top: 1%;
+  }
+
+  .hero2__bear {
+    inset: 20% 0 0;
+  }
+
+  .hero2__um {
+    margin-left: 18%;
+  }
+
+  .hero2__touch {
+    right: 24%;
+    top: 58%;
+  }
+
+  .hero2__foot {
+    grid-template-columns: 1fr auto;
+    align-items: end;
+  }
+
+  .gift {
+    margin-top: 130px;
+  }
+
+  .picks {
+    grid-template-columns: 1.5fr 1fr 1fr;
+    gap: 28px;
+    align-items: end;
+  }
+
+  .pick--big {
+    grid-column: auto;
+  }
+
+  .note {
+    grid-template-columns: 1fr 1.1fr;
+    align-items: center;
+    gap: 64px;
+    margin-top: 150px;
+  }
+
+  .note__actions {
+    grid-column: 2;
+  }
+
+  .deliver {
+    margin-top: 150px;
+    max-width: 860px;
+  }
+
+  .mural {
+    margin-top: 150px;
+  }
+
+  .mural__track {
+    justify-content: center;
+    overflow: visible;
+  }
+
+  .polaroid {
+    width: 220px;
+  }
+
+  .signoff {
+    padding-bottom: 72px;
+  }
+}
