@@ -4,16 +4,16 @@ import { useNavigate } from 'react-router-dom'
 import { Icon } from '../components/Icon'
 import { AnimatedPrice, bouncy, Page } from '../components/motion'
 import { ExtrasList, ProductOptions } from '../components/Options'
-import { ProductArt } from '../components/ProductArt'
 import { ProductStage } from '../components/ProductStage'
+import { ProductVisual } from '../components/ProductVisual'
 import { gap } from '../components/style'
-import { defaultSelection, describeSelection, looksFor, missingRequired, OCCASIONS, PRODUCTS, unitPrice, type Occasion, type Selection } from '../data/products'
+import { defaultSelection, describeSelection, missingRequired, OCCASIONS, PRODUCTS, unitPrice, type Occasion, type Selection } from '../data/products'
 import { brl } from '../lib/format'
 import { useCart } from '../store/cart'
 import { useUI } from '../store/ui'
 
 const STEPS = ['Presente', 'Ocasião', 'Personalize', 'Finalize']
-const OCC_EMOJI: Record<Occasion, string> = { Aniversário: '🎂', Amor: '❤️', 'Dia das Mães': '💐', Nascimento: '🍼', Melhoras: '🌼', 'Só porque sim': '✨' }
+const OCC_EMOJI: Record<Occasion, string> = { Aniversário: '🎂', Amor: '❤️', Formatura: '🎓', 'Dia das Mães': '💐', Nascimento: '🍼', Melhoras: '🌼', 'Só porque sim': '✨' }
 
 const variants = {
   enter: (dir: number) => ({ x: dir * 40, opacity: 0 }),
@@ -51,7 +51,7 @@ export default function Builder() {
   }
 
   const finish = (e: MouseEvent<HTMLButtonElement>) => {
-    add({ productId, name: product.name, unitPrice: price, selection: sel, extras, summary: [occasion, ...describeSelection(product, sel, extras)] })
+    add({ productId, name: product.name, unitPrice: price, selection: sel, extras, occasion, summary: [occasion, ...describeSelection(product, sel, extras)] })
     fly(e.currentTarget)
     toast('Presente montado e na sacola ♡')
     setTimeout(() => navigate('/sacola'), 650)
@@ -88,7 +88,7 @@ export default function Builder() {
                     return (
                       <motion.button key={p.id} className={`method ${on ? 'on' : ''}`} onClick={() => setProductId(p.id)} whileTap={{ scale: 0.98 }} layout>
                         <span className="arch" style={{ width: 56, height: 64, flex: 'none', borderRadius: '28px 28px 10px 10px' }}>
-                          <ProductArt kind={p.art} look={looksFor(p, selections[p.id] ?? defaultSelection(p))} className="art" />
+                          <ProductVisual product={p} selection={selections[p.id]} sizes="56px" />
                         </span>
                         <span className="method__text">
                           <b>{p.name}</b>
@@ -131,7 +131,7 @@ export default function Builder() {
 
               {step === 2 && (
                 <div className="stack" style={gap(18)}>
-                  <div className="arch arch--product" style={{ maxWidth: 420, width: '100%', margin: '0 auto' }}>
+                  <div className={`arch arch--product${product.image ? ' arch--photo' : ''}`} style={{ maxWidth: 420, width: '100%', margin: '0 auto' }}>
                     <ProductStage product={product} selection={sel} hint="Prévia ao vivo · arraste para girar" />
                   </div>
                   <ProductOptions product={product} value={sel} onChange={setSel} />
@@ -142,7 +142,7 @@ export default function Builder() {
                 <div className="stack" style={gap(16)}>
                   <div className="panel row" style={gap(14)}>
                     <span className="arch" style={{ width: 74, height: 86, flex: 'none', borderRadius: '37px 37px 12px 12px' }}>
-                      <ProductArt kind={product.art} look={looksFor(product, sel)} className="art" />
+                      <ProductVisual product={product} selection={sel} sizes="74px" />
                     </span>
                     <div className="stack" style={gap(4)}>
                       <span className="eyebrow">{occasion}</span>

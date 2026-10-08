@@ -11,6 +11,8 @@ export interface CartItem {
   selection: Selection
   extras: string[]
   summary: string[]
+  /** Ocasião escolhida no "Monte o seu" */
+  occasion?: string
 }
 
 interface CartState {

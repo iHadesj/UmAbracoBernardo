@@ -594,6 +594,18 @@ svg {
   height: 100%;
 }
 
+/* fotos de produto: preenchem a moldura, sem o respiro das ilustrações */
+img.art.photo {
+  display: block;
+  padding: 0;
+  object-fit: cover;
+  object-position: 50% 40%;
+}
+
+.arch--photo {
+  aspect-ratio: 4 / 5;
+}
+
 /* ============ 3D stage ============ */
 .stage {
   position: absolute;

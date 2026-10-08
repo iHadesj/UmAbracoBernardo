@@ -60,7 +60,7 @@ function Detail({ product }: { product: Product }) {
           <button className="back" onClick={() => (window.history.length > 1 ? navigate(-1) : navigate('/presentes'))}>
             <Icon name="back" size={18} /> Presentes
           </button>
-          <motion.div className="arch arch--product" layoutId={`art-${product.id}`} transition={{ type: 'spring', stiffness: 260, damping: 30 }}>
+          <motion.div className={`arch arch--product${product.image ? ' arch--photo' : ''}`} layoutId={`art-${product.id}`} transition={{ type: 'spring', stiffness: 260, damping: 30 }}>
             <ProductStage product={product} selection={sel} />
           </motion.div>
         </div>

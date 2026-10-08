@@ -3,8 +3,9 @@ import { CepChecker } from '../components/CepChecker'
 import { Footer } from '../components/Chrome'
 import { Icon, type IconName } from '../components/Icon'
 import { CountUp, Page, Reveal, SplitTitle, staggerChild, staggerParent } from '../components/motion'
-import { ProductArt } from '../components/ProductArt'
+import { ProductVisual } from '../components/ProductVisual'
 import { gap } from '../components/style'
+import { getProduct, PRODUCTS } from '../data/products'
 import { brl } from '../lib/format'
 import { FREE_SHIPPING_ABOVE } from '../lib/shipping'
 import { WA_GENERAL } from '../lib/whatsapp'
@@ -35,10 +36,10 @@ export default function About() {
         </section>
 
         <div className="grid-fields" style={{ marginTop: 24, alignItems: 'end' }}>
-          {(['bear-roses', 'bubble'] as const).map((k, i) => (
-            <Reveal key={k} delay={i * 0.1}>
+          {['box-amor', 'bubble-urso-aniversario'].map((id, i) => (
+            <Reveal key={id} delay={i * 0.1}>
               <motion.div className="arch" style={{ aspectRatio: '4 / 5' }} whileHover={{ y: -6 }}>
-                <ProductArt kind={k} className="art" />
+                <ProductVisual product={getProduct(id)!} sizes="(min-width: 900px) 30vw, 50vw" />
               </motion.div>
             </Reveal>
           ))}
@@ -47,8 +48,8 @@ export default function About() {
         <Reveal className="section row" style={{ justifyContent: 'space-around', textAlign: 'center' }}>
           {[
             { n: 48, s: 'h', l: 'antecedência ideal' },
-            { n: 3, s: 'x', l: 'sem juros no cartão' },
-            { n: 5, s: '%', l: 'off no Pix' },
+            { n: PRODUCTS.length, s: '', l: 'presentes na vitrine' },
+            { n: 100, s: '%', l: 'montado à mão' },
           ].map((x) => (
             <div key={x.l} className="stack" style={gap(2)}>
               <span className="price" style={{ fontSize: 30 }}>

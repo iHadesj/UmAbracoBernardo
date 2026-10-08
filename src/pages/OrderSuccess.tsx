@@ -5,6 +5,7 @@ import { Icon } from '../components/Icon'
 import { bouncy, Page } from '../components/motion'
 import { gap } from '../components/style'
 import { brl, prettyDate } from '../lib/format'
+import { orderMessage } from '../lib/orderMessage'
 import { useOrders } from '../lib/orders'
 import { waLink } from '../lib/whatsapp'
 
@@ -57,12 +58,7 @@ export default function OrderSuccess() {
     )
   }
 
-  const msg = [
-    `Olá! Acabei de fazer o pedido ${order.id} 💛`,
-    ...order.items.map((i) => `• ${i.qty}× ${i.name}`),
-    `Entrega: ${prettyDate(order.date)} (${order.period === 'manha' ? 'manhã' : 'tarde'}) para ${order.recipient}`,
-    `Total: ${brl(order.total)}`,
-  ].join('\n')
+  const wa = waLink(orderMessage(order))
 
   return (
     <Page>
@@ -74,12 +70,12 @@ export default function OrderSuccess() {
           </svg>
         </motion.div>
         <motion.div className="stack" style={{ ...gap(6), alignItems: 'center' }} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
-          <span className="kicker">abraço a caminho!</span>
+          <span className="kicker">quase lá!</span>
           <h1 className="h2">
-            Pedido <em>confirmado</em>
+            Pedido <em>montado</em>
           </h1>
           <p className="muted">
-            Nº <b style={{ color: 'var(--ink)' }}>{order.id}</b> · pagamento {order.payment.method === 'pix' ? 'via Pix' : 'no cartão'} aprovado.
+            Nº <b style={{ color: 'var(--ink)' }}>{order.id}</b> · abrimos o WhatsApp com tudo escrito. Envie a mensagem por lá para confirmarmos e combinarmos o pagamento.
           </p>
         </motion.div>
 
@@ -96,12 +92,6 @@ export default function OrderSuccess() {
             <span>Entrega · {prettyDate(order.date)}</span>
             <span>{order.shipping === 0 ? 'Grátis' : brl(order.shipping)}</span>
           </div>
-          {order.discount > 0 && (
-            <div className="sum-row">
-              <span>Desconto Pix</span>
-              <span className="free">− {brl(order.discount)}</span>
-            </div>
-          )}
           <div className="sum-row sum-row--total">
             <b>Total</b>
             <span className="price">{brl(order.total)}</span>
@@ -112,8 +102,8 @@ export default function OrderSuccess() {
         </motion.div>
 
         <motion.div className="stack" style={{ ...gap(10), width: '100%' }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9 }}>
-          <a href={waLink(msg)} target="_blank" rel="noreferrer" className="btn btn--primary btn--block">
-            <Icon name="whatsapp" size={19} /> Acompanhar pelo WhatsApp
+          <a href={wa} target="_blank" rel="noreferrer" className="btn btn--primary btn--block">
+            <Icon name="whatsapp" size={19} /> Abrir o WhatsApp de novo
           </a>
           <Link to="/presentes" className="btn btn--ghost btn--block">
             Continuar comprando

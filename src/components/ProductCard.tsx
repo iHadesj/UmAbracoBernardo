@@ -1,12 +1,12 @@
 import { motion } from 'framer-motion'
 import { useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { defaultSelection, describeSelection, looksFor, missingRequired, unitPrice, type Product } from '../data/products'
+import { defaultSelection, describeSelection, missingRequired, unitPrice, type Product } from '../data/products'
 import { brl } from '../lib/format'
 import { useCart } from '../store/cart'
 import { useUI } from '../store/ui'
 import { Icon } from './Icon'
-import { ProductArt } from './ProductArt'
+import { ProductVisual } from './ProductVisual'
 
 export function ProductCard({ product }: { product: Product }) {
   const add = useCart((s) => s.add)
@@ -30,7 +30,7 @@ export function ProductCard({ product }: { product: Product }) {
       <Link to={`/produto/${product.id}`} aria-label={product.name}>
         <motion.div className="arch pcard__art" layoutId={`art-${product.id}`} whileTap={{ scale: 0.97 }}>
           <motion.div style={{ width: '100%', height: '100%' }} whileHover={{ scale: 1.05, rotate: -1.5 }} transition={{ duration: 0.5 }}>
-            <ProductArt kind={product.art} look={looksFor(product, sel)} className="art" />
+            <ProductVisual product={product} selection={sel} />
           </motion.div>
         </motion.div>
       </Link>

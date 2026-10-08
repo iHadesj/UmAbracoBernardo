@@ -1,6 +1,7 @@
 import { lazy, Suspense, useMemo } from 'react'
 import { looksFor, type Product, type Selection } from '../data/products'
 import { ProductArt } from './ProductArt'
+import { ProductVisual } from './ProductVisual'
 
 const BearStage = lazy(() => import('../three/BearStage'))
 const BubbleStage = lazy(() => import('../three/BubbleStage'))
@@ -25,11 +26,11 @@ export function ProductStage({ product, selection, hint }: { product: Product; s
   const look = looksFor(product, selection)
   const art = (
     <div className="stage-fallback">
-      <ProductArt kind={product.art} look={look} className="art" />
+      {product.image ? <ProductVisual product={product} sizes="(min-width: 900px) 45vw, 100vw" eager /> : <ProductArt kind={product.art} look={look} className="art" />}
     </div>
   )
   const canRender = useMemo(hasWebGL, [])
-  if (!product.model || !canRender) return art
+  if (product.image || !product.model || !canRender) return art
 
   const fallback = (
     <>

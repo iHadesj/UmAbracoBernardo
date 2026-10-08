@@ -252,7 +252,7 @@ export function Footer() {
         </div>
         <div className="stack small muted" style={gap(6)}>
           <span>Recomendamos 48h de antecedência</span>
-          <span>Pagamento seguro · Pix e cartão</span>
+          <span>Pedido finalizado pelo WhatsApp</span>
           <span>© {new Date().getFullYear()} Um abraço, Bernardo</span>
         </div>
       </div>

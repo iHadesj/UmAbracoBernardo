@@ -4,9 +4,9 @@ import { Link } from 'react-router-dom'
 import { useCepLookup } from '../components/CepChecker'
 import { Icon } from '../components/Icon'
 import { bouncy, Page } from '../components/motion'
-import { ProductArt, type ArtLook } from '../components/ProductArt'
 import { ProductStage } from '../components/ProductStage'
-import { defaultSelection, getProduct, looksFor, PRODUCTS, type ArtKind, type Occasion, type Product } from '../data/products'
+import { ProductVisual } from '../components/ProductVisual'
+import { defaultSelection, getProduct, MASCOT, PRODUCTS, type Occasion, type Product } from '../data/products'
 import { brl } from '../lib/format'
 import { WA_GENERAL } from '../lib/whatsapp'
 import { useCheckout } from '../store/checkout'
@@ -20,7 +20,7 @@ const EASE = [0.2, 0.7, 0.2, 1] as const
 /* ------------------------------------------------------------------ */
 
 function Hero() {
-  const bear = getProduct('urso-bernardo')!
+  const bear = MASCOT
   const hugs = useUI((s) => s.hugs)
   const ref = useRef<HTMLElement>(null)
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
@@ -113,11 +113,12 @@ function Hero() {
 /* ------------------------------------------------------------------ */
 
 const RECIPIENTS = [
-  { id: 'especial', label: 'alguém especial', boost: ['urso-bernardo', 'cesta-abraco', 'bubble-personalizado'] },
-  { id: 'mae', label: 'minha mãe', boost: ['buque-rosas', 'cesta-abraco', 'urso-buque'] },
-  { id: 'amor', label: 'meu amor', boost: ['urso-buque', 'buque-rosas', 'urso-bernardo'] },
-  { id: 'amiga', label: 'uma amiga', boost: ['bubble-personalizado', 'buque-baloes', 'urso-bernardo'] },
-  { id: 'bebe', label: 'um bebê que chegou', boost: ['urso-bubble', 'urso-bernardo', 'arranjo-mesa'] },
+  { id: 'especial', label: 'alguém especial', boost: ['bubble-urso-aniversario', 'buque-urso-algodao', 'box-amor'] },
+  { id: 'mae', label: 'minha mãe', boost: ['bubble-buque-lilas', 'box-amor', 'bubble-buque-mosquitinho'] },
+  { id: 'amor', label: 'meu amor', boost: ['box-amor', 'bubble-urso-aniversario', 'buque-urso-algodao'] },
+  { id: 'amiga', label: 'uma amiga', boost: ['bubble-buque-mosquitinho', 'buque-urso-algodao', 'bubble-urso-aniversario'] },
+  { id: 'formando', label: 'quem se formou', boost: ['buque-urso-formatura', 'bubble-box-formatura', 'mini-buque-formatura'] },
+  { id: 'bebe', label: 'um bebê que chegou', boost: ['bubble-urso-aniversario', 'buque-urso-algodao', 'mini-buque-formatura'] },
 ]
 
 const REASONS: { label: string; occasion: Occasion }[] = [
@@ -125,6 +126,7 @@ const REASONS: { label: string; occasion: Occasion }[] = [
   { label: 'um aniversário', occasion: 'Aniversário' },
   { label: 'o Dia das Mães', occasion: 'Dia das Mães' },
   { label: 'dizer que ama', occasion: 'Amor' },
+  { label: 'a formatura', occasion: 'Formatura' },
   { label: 'dar as boas-vindas', occasion: 'Nascimento' },
   { label: 'desejar melhoras', occasion: 'Melhoras' },
 ]
@@ -174,7 +176,6 @@ function PriceTag({ price, delay = 0 }: { price: number; delay?: number }) {
 }
 
 function Pick({ p, big, i }: { p: Product; big: boolean; i: number }) {
-  const look = looksFor(p, defaultSelection(p))
   return (
     <motion.article
       layout
@@ -186,7 +187,7 @@ function Pick({ p, big, i }: { p: Product; big: boolean; i: number }) {
     >
       <Link to={`/produto/${p.id}`} className="pick__link">
         <motion.div className="pick__frame" layoutId={`art-${p.id}`} whileHover={{ y: -4 }} whileTap={{ scale: 0.98 }}>
-          <ProductArt kind={p.art} look={look} className="art" />
+          <ProductVisual product={p} sizes={big ? '(min-width: 900px) 50vw, 100vw' : '(min-width: 900px) 25vw, 50vw'} />
         </motion.div>
         <PriceTag price={p.price} delay={0.2 + i * 0.1} />
         <h3 className="pick__name">{p.name}</h3>
@@ -324,12 +325,12 @@ function Delivery() {
 /* 5. Mural de polaroids                                               */
 /* ------------------------------------------------------------------ */
 
-const SHOTS: { art: ArtKind; caption: string; rot: number; look?: ArtLook }[] = [
-  { art: 'bear-roses', caption: 'rosas de sábado', rot: -4 },
-  { art: 'bubble', caption: 'o bubble da Helena', rot: 3, look: { name: 'Helena' } },
-  { art: 'basket', caption: 'cesta pro Dia das Mães', rot: -2 },
-  { art: 'balloon-bouquet', caption: 'cinco balões, um laço', rot: 5 },
-  { art: 'bear', caption: 'o Bernardo original', rot: -3, look: { ribbon: '#D98E96' } },
+const SHOTS: { id: string; caption: string; rot: number }[] = [
+  { id: 'box-amor', caption: 'box pro dia dos namorados', rot: -4 },
+  { id: 'bubble-urso-aniversario', caption: 'um bubble de aniversário', rot: 3 },
+  { id: 'buque-urso-formatura', caption: 'diploma na mão', rot: -2 },
+  { id: 'bubble-buque-lilas', caption: 'tudo em lilás', rot: 5 },
+  { id: 'buque-urso-algodao', caption: 'algodão e folhagens', rot: -3 },
 ]
 
 function Mural() {
@@ -356,9 +357,9 @@ function Mural() {
             viewport={{ once: true, amount: 0.4 }}
             transition={{ type: 'spring', stiffness: 160, damping: 16, delay: i * 0.08 }}
           >
-            <div className="polaroid__img">
-              <ProductArt kind={s.art} look={s.look} className="art" />
-            </div>
+            <Link to={`/produto/${s.id}`} className="polaroid__img" draggable={false}>
+              <ProductVisual product={getProduct(s.id)!} sizes="240px" />
+            </Link>
             <figcaption>{s.caption}</figcaption>
           </motion.figure>
         ))}

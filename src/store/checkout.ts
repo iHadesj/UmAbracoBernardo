@@ -3,7 +3,8 @@ import { createJSONStorage, persist } from 'zustand/middleware'
 import type { CepAddress } from '../lib/cep'
 
 export type Period = 'manha' | 'tarde'
-export type PayMethod = 'pix' | 'card'
+
+export const PERIOD_LABEL: Record<Period, string> = { manha: 'Manhã · 9h–12h', tarde: 'Tarde · 13h–18h' }
 
 export interface CheckoutState {
   cep: string
@@ -14,8 +15,9 @@ export interface CheckoutState {
   date: string
   period: Period
   note: string
+  name: string
   phone: string
-  method: PayMethod
+  obs: string
   set: (patch: Partial<Omit<CheckoutState, 'set' | 'reset'>>) => void
   reset: () => void
 }
@@ -29,8 +31,9 @@ const initial = {
   date: '',
   period: 'tarde' as Period,
   note: '',
+  name: '',
   phone: '',
-  method: 'pix' as PayMethod,
+  obs: '',
 }
 
 /** Rascunho do checkout — fica na sessão para o usuário não perder o que digitou. */

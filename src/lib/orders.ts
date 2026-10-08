@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { CartItem } from '../store/cart'
 import type { CepAddress } from './cep'
-import type { PayMethod, Period } from '../store/checkout'
+import type { Period } from '../store/checkout'
 import { firebaseEnabled, getFirebase } from './firebase'
 
 export interface Order {
@@ -11,16 +11,22 @@ export interface Order {
   items: CartItem[]
   subtotal: number
   shipping: number
-  discount: number
   total: number
   address: CepAddress & { number: string; complement: string }
   recipient: string
   date: string
   period: Period
+  /** Bilhete que vai no cartão */
   note: string
+  /** Observações para a loja (referência, horário, etc.) */
+  obs: string
+  /** Sem conta: uid = GUEST_UID */
   customer: { uid: string; name: string; email: string | null; phone: string }
-  payment: { method: PayMethod; status: 'approved' | 'pending'; transactionId: string; installments?: number; last4?: string }
+  /** Por enquanto o pedido é fechado e pago pelo WhatsApp */
+  channel: 'whatsapp'
 }
+
+export const GUEST_UID = 'convidado'
 
 export const newOrderId = () => 'UAB-' + Date.now().toString(36).slice(-4).toUpperCase() + Math.random().toString(36).slice(2, 5).toUpperCase()
 

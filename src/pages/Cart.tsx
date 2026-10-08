@@ -4,9 +4,10 @@ import { CepCheckerView, useCepLookup } from '../components/CepChecker'
 import { Icon } from '../components/Icon'
 import { AnimatedPrice, Page } from '../components/motion'
 import { ProductArt } from '../components/ProductArt'
+import { ProductVisual } from '../components/ProductVisual'
 import { gap } from '../components/style'
 import { Qty } from '../components/ui'
-import { getProduct, looksFor } from '../data/products'
+import { getProduct } from '../data/products'
 import { brl } from '../lib/format'
 import { cartSubtotal, useCart, type CartItem } from '../store/cart'
 import { useUI } from '../store/ui'
@@ -40,7 +41,7 @@ function Row({ item }: { item: CartItem }) {
       </motion.div>
       <motion.div className="cart-item__card" drag="x" dragDirectionLock dragConstraints={{ left: 0, right: 0 }} dragElastic={{ left: 0.7, right: 0 }} style={{ x }} onDragEnd={onDragEnd}>
         <Link to={`/produto/${item.productId}`} className="cart-item__thumb arch" draggable={false}>
-          {product && <ProductArt kind={product.art} look={looksFor(product, item.selection)} className="art" />}
+          {product && <ProductVisual product={product} selection={item.selection} sizes="82px" />}
         </Link>
         <div className="cart-item__info">
           <b>{item.name}</b>
@@ -114,11 +115,10 @@ export default function Cart() {
               <span>Entrega</span>
               <span>{shipping === null ? 'Informe o CEP' : shipping === 0 ? <b className="free">Grátis</b> : brl(shipping)}</span>
             </div>
-            <div className="sum-row">
-              <span>No Pix</span>
-              <span className="pill">5% de desconto</span>
-            </div>
           </div>
+          <p className="small muted" style={{ marginTop: 10 }}>
+            O pedido é enviado pelo WhatsApp e o pagamento é combinado por lá.
+          </p>
         </motion.div>
       </div>
 
@@ -129,7 +129,7 @@ export default function Cart() {
             <AnimatedPrice value={subtotal + (shipping ?? 0)} />
           </div>
           <motion.button className="btn btn--primary" onClick={() => navigate('/checkout')} whileTap={{ scale: 0.96 }}>
-            Finalizar compra <Icon name="arrow" size={18} />
+            Finalizar pedido <Icon name="arrow" size={18} />
           </motion.button>
         </div>
       </div>
