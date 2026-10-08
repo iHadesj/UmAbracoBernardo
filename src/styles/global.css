@@ -661,6 +661,14 @@ img.art.photo {
   padding: 8% 10% 4%;
 }
 
+.stage-load {
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
+  translate: -50% 0;
+  z-index: 3;
+}
+
 .shimmer {
   position: absolute;
   inset: 0;

@@ -1,4 +1,4 @@
-import { Canvas } from '@react-three/fiber'
+import { Canvas, useFrame } from '@react-three/fiber'
 import { ContactShadows, Environment, Lightformer, PerformanceMonitor } from '@react-three/drei'
 import { AnimatePresence, motion, useInView } from 'framer-motion'
 import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode, type RefObject } from 'react'
@@ -190,10 +190,22 @@ interface StageShellProps {
   hint?: string
   children: (ctl: StageController, onTap: (clientX: number, clientY: number) => void) => ReactNode
   shadowY?: number
+  /** Chamado depois do primeiro quadro desenhado (modelo já montado) */
+  onReady?: () => void
+}
+
+function FirstFrame({ onReady }: { onReady?: () => void }) {
+  const done = useRef(false)
+  useFrame(() => {
+    if (done.current) return
+    done.current = true
+    onReady?.()
+  })
+  return null
 }
 
 /** Canvas + gestos + corações + dica. Pausa o render quando sai da tela. */
-export function StageShell({ className = '', camera, hint, children, shadowY = 0 }: StageShellProps) {
+export function StageShell({ className = '', camera, hint, children, shadowY = 0, onReady }: StageShellProps) {
   const ctl = useMemo(createController, [])
   const wrap = useRef<HTMLDivElement>(null)
   const inView = useInView(wrap, { margin: '160px' })
@@ -241,6 +253,7 @@ export function StageShell({ className = '', camera, hint, children, shadowY = 0
         <StageLights />
         {children(ctl, onTap)}
         <ContactShadows position={[0, shadowY, 0]} opacity={0.32} scale={5} blur={2.6} far={2.2} color="#4a2a1a" frames={1} />
+        <FirstFrame onReady={onReady} />
       </Canvas>
       {bursts.map((b) => (
         <HeartBurst key={b.id} burst={b} />

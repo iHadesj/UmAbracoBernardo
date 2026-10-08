@@ -150,6 +150,53 @@
   display: inline-block;
 }
 
+/* convite que aparece no 3º, 10º e 25º abraço */
+.hug-reward {
+  position: absolute;
+  z-index: 3;
+  left: 16px;
+  bottom: 56px;
+  width: min(300px, calc(100% - 32px));
+  display: grid;
+  gap: 4px;
+  justify-items: start;
+  padding: 14px 16px 16px;
+  border: 1px solid var(--ln);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--sf) 92%, transparent);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 14px 34px -18px rgba(60, 30, 20, 0.45);
+}
+
+.hug-reward b {
+  font-family: var(--font-hand);
+  font-size: calc(24px * var(--hand-scale));
+  font-weight: 400;
+  color: var(--red);
+  line-height: 1.1;
+}
+
+.hug-reward span {
+  font-size: 13.5px;
+  color: var(--mu);
+  margin-bottom: 8px;
+}
+
+.hug-reward__close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--mu);
+  cursor: pointer;
+}
+
 .hero2__foot {
   display: grid;
   gap: 22px;

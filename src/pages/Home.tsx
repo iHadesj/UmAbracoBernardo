@@ -7,6 +7,7 @@ import { bouncy, Page } from '../components/motion'
 import { ProductStage } from '../components/ProductStage'
 import { ProductVisual } from '../components/ProductVisual'
 import { defaultSelection, getProduct, MASCOT, PRODUCTS, type Occasion, type Product } from '../data/products'
+import { finePointer } from '../lib/device'
 import { brl } from '../lib/format'
 import { WA_GENERAL } from '../lib/whatsapp'
 import { useCheckout } from '../store/checkout'
@@ -14,6 +15,13 @@ import { useUI } from '../store/ui'
 import '../styles/home.css'
 
 const EASE = [0.2, 0.7, 0.2, 1] as const
+
+/** Convites que aparecem conforme os abraços no urso */
+const REWARDS = [
+  { at: 3, title: 'Ele gostou de você ♡', text: 'Que tal mandar um abraço desses para alguém?' },
+  { at: 10, title: '10 abraços!', text: 'O Bernardo já quer ir para casa com alguém especial.' },
+  { at: 25, title: 'Abraço campeão ♡', text: 'Ninguém abraçou tanto hoje. Monte um presente do seu jeito.' },
+]
 
 /* ------------------------------------------------------------------ */
 /* 1. Palco: "abraço" gigante atrás do urso                            */
@@ -28,6 +36,11 @@ function Hero() {
   const bearY = useTransform(scrollYProgress, [0, 1], ['0%', '-8%'])
   const [word, animateWord] = useAnimate()
   const first = useRef(true)
+  const mouse = useMemo(finePointer, [])
+  // o convite só aparece com abraços dados nesta visita (o contador é salvo no navegador)
+  const hugsAtLoad = useRef(hugs)
+  const [closedAt, setClosedAt] = useState(0)
+  const reward = [...REWARDS].reverse().find((r) => hugs >= r.at && hugsAtLoad.current < r.at && r.at > closedAt)
 
   // cada abraço no urso "aperta" a palavra
   useEffect(() => {
@@ -72,7 +85,7 @@ function Hero() {
         <AnimatePresence mode="wait">
           {hugs === 0 ? (
             <motion.div key="hint" className="hero2__touch" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, y: -6 }} transition={{ delay: 1.2 }}>
-              toque nele
+              {mouse ? 'clique nele ou arraste' : 'toque nele'}
               <svg width="58" height="46" viewBox="0 0 58 46" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round">
                 <motion.path d="M52 4C50 22 36 34 10 38" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ delay: 1.5, duration: 0.8 }} />
                 <motion.path d="M17 31l-8 7 10 3" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ delay: 2.2, duration: 0.3 }} />
@@ -84,6 +97,29 @@ function Hero() {
                 {hugs}
               </motion.span>{' '}
               {hugs === 1 ? 'abraço dado' : 'abraços dados'} ♡
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {reward && (
+            <motion.div
+              key={reward.at}
+              className="hug-reward"
+              role="status"
+              initial={{ opacity: 0, y: 24, scale: 0.9, rotate: -3 }}
+              animate={{ opacity: 1, y: 0, scale: 1, rotate: -1.5 }}
+              exit={{ opacity: 0, y: 12, scale: 0.95 }}
+              transition={bouncy}
+            >
+              <button className="hug-reward__close" onClick={() => setClosedAt(reward.at)} aria-label="Fechar">
+                <Icon name="close" size={14} />
+              </button>
+              <b>{reward.title}</b>
+              <span>{reward.text}</span>
+              <Link to="/monte" className="btn btn--primary btn--sm">
+                Monte um presente <Icon name="arrow" size={15} />
+              </Link>
             </motion.div>
           )}
         </AnimatePresence>
