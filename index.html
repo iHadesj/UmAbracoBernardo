@@ -13,9 +13,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair:ital,opsz,wght@0,5..1200,300..700;1,5..1200,300..700&family=DM+Sans:ital,opsz,wght@0,9..40,200..700;1,9..40,200..700&family=Dancing+Script:wght@400..600&family=Leckerli+One&display=swap" rel="stylesheet" />
     <script>
       try {
-        var t = localStorage.getItem('uab-theme');
-        if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        document.documentElement.dataset.theme = t;
+        // tema claro por padrão; escuro só se o usuário escolheu
+        document.documentElement.dataset.theme = localStorage.getItem('uab-theme') === 'dark' ? 'dark' : 'light';
         // paleta e fontes escolhidas na última visita (ver src/theme/styles.ts)
         var saved = JSON.parse(localStorage.getItem('uab-vars') || 'null');
         if (saved) {
