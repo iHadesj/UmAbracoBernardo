@@ -80,7 +80,7 @@ function normalAt(e: Ellipse, p: THREE.Vector3) {
   return new THREE.Vector3((p.x - e.c[0]) / e.r[0] ** 2, (p.y - e.c[1]) / e.r[1] ** 2, (p.z - e.c[2]) / e.r[2] ** 2).normalize()
 }
 
-const FUR = 0.085
+const FUR = 0.11
 const BODY: Ellipse = { c: [0, 0.88, -0.02], r: [0.74, 0.86, 0.66] }
 const HEAD: Ellipse = { c: [0, 2.08, 0.06], r: [0.9, 0.8, 0.76] }
 const MUZZLE: Ellipse = { c: [0, 1.88, 0.62], r: [0.32, 0.23, 0.24] }
@@ -124,13 +124,15 @@ export function buildBear(): BearGeometry {
       center: BODY.c,
       radii: BODY.r,
       slot: 0,
-      fur: (u) => FUR * (1 - 0.55 * ss(u.y, 0.55, 0.75)),
+      fur: (u) => FUR * (1 - 0.55 * ss(u.y, 0.55, 0.75)) * (1 - 0.25 * ss(u.z, 0.3, 0.7)),
+      tint: (u) => Math.max(0, 0.15 - 0.3 * ss(u.z, 0.2, 0.6)),
       deform: (u) => {
         const k = 1 - 0.12 * u.y // formato de pera
         u.x *= k
         u.z *= k
         if (u.y < -0.7) u.y = -0.7 + (u.y + 0.7) * 0.45 // base achatada (sentado)
       },
+      seg: [48, 34],
     }),
   ]
   const beans: Bean[] = []
@@ -138,11 +140,11 @@ export function buildBear(): BearGeometry {
     const legC: Vec3 = [s * 0.43, 0.28, 0.38]
     const legR: Vec3 = [0.31, 0.27, 0.47]
     const legRot: Vec3 = [-0.12, s * 0.32, 0]
-    body.push(ellipsoid({ center: legC, radii: legR, rot: legRot, slot: 0, fur: (u) => lerp(FUR, 0.016, ss(u.z, 0.62, 0.86)) }))
+    body.push(ellipsoid({ center: legC, radii: legR, rot: legRot, slot: 0, fur: (u) => lerp(FUR, 0.02, ss(u.z, 0.62, 0.86)), seg: [38, 28] }))
     const legM = partMatrix(legC, legR, legRot)
     const padC: Vec3 = [0, 0.02, 0.86]
     const padR: Vec3 = [0.72, 0.84, 0.16]
-    body.push(ellipsoid({ center: padC, radii: padR, slot: 1, fur: 0.02, parent: legM, seg: [32, 20] }))
+    body.push(ellipsoid({ center: padC, radii: padR, slot: 1, fur: 0.025, parent: legM, seg: [36, 24] }))
 
     // almofadinhas: uma grande e três dedinhos
     const padM = partMatrix(padC, padR, [0, 0, 0], legM)
@@ -165,7 +167,7 @@ export function buildBear(): BearGeometry {
     const r: Vec3 = [0.23, 0.42, 0.24]
     const rot: Vec3 = [-0.55, 0, s * 0.32]
     const pivot = new THREE.Vector3(0, 0.78, 0).applyMatrix4(partMatrix(c, r, rot))
-    const geo = ellipsoid({ center: c, radii: r, rot, slot: 0, fur: FUR * 0.95, seg: [36, 26] })
+    const geo = ellipsoid({ center: c, radii: r, rot, slot: 0, fur: FUR * 0.95, seg: [40, 30] })
     geo.translate(-pivot.x, -pivot.y, -pivot.z)
     return { geo, pivot, side: s }
   })
@@ -177,11 +179,11 @@ export function buildBear(): BearGeometry {
       center: HEAD.c,
       radii: HEAD.r,
       slot: 0,
-      fur: (u) => FUR * (1 - 0.38 * ss(u.z, 0.35, 0.85)) * (1 - 0.5 * ss(-u.y, 0.6, 0.85)),
-      // bochechas rosadas na própria pelagem
-      tint: (u) => Math.max(...sides.map((s) => 1 - ss(u.distanceTo(cheek(s)), 0.1, 0.34))),
+      fur: (u) => FUR * (1 - 0.42 * ss(u.z, 0.3, 0.88)) * (1 - 0.45 * ss(-u.y, 0.55, 0.85)),
+      tint: (u) => Math.max(...sides.map((s) => 1 - ss(u.distanceTo(cheek(s)), 0.08, 0.32))),
+      seg: [50, 36],
     }),
-    ellipsoid({ center: MUZZLE.c, radii: MUZZLE.r, slot: 1, fur: 0.032, seg: [36, 24] }),
+    ellipsoid({ center: MUZZLE.c, radii: MUZZLE.r, slot: 1, fur: 0.035, seg: [40, 28] }),
   ]
   const headGeo = mergeGeometries(head)
   headGeo.translate(-NECK.x, -NECK.y, -NECK.z)
@@ -193,8 +195,8 @@ export function buildBear(): BearGeometry {
     const rot: Vec3 = [0, 0, -s * 0.32]
     const earM = partMatrix(c, r, rot)
     const parts = [
-      ellipsoid({ center: c, radii: r, rot, slot: 0, fur: (u) => lerp(0.07, 0.02, ss(u.z, 0.3, 0.75)), seg: [32, 22] }),
-      ellipsoid({ center: [0, -0.08, 0.72], radii: [0.6, 0.58, 0.36], slot: 2, fur: 0.03, parent: earM, seg: [28, 18] }),
+      ellipsoid({ center: c, radii: r, rot, slot: 0, fur: (u) => lerp(0.09, 0.025, ss(u.z, 0.25, 0.8)), seg: [36, 26] }),
+      ellipsoid({ center: [0, -0.08, 0.72], radii: [0.6, 0.58, 0.36], slot: 2, fur: 0.028, parent: earM, seg: [32, 22] }),
     ]
     const geo = mergeGeometries(parts)
     parts.forEach((g) => g.dispose())

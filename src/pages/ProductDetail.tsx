@@ -27,6 +27,7 @@ function Detail({ product }: { product: Product }) {
   const add = useCart((s) => s.add)
   const fly = useUI((s) => s.fly)
   const toast = useUI((s) => s.toast)
+  const showGoToCart = useUI((s) => s.showGoToCart)
   const [sel, setSel] = useState(() => defaultSelection(product))
   const [extras, setExtras] = useState<string[]>([])
   const [qty, setQty] = useState(1)
@@ -49,6 +50,7 @@ function Detail({ product }: { product: Product }) {
     add({ productId: product.id, name: product.name, unitPrice: unit, selection: sel, extras, summary }, qty)
     fly(addBtn.current)
     toast(`${product.name} na sacola`)
+    showGoToCart()
   }
 
   const waMsg = [`Olá! Tenho interesse no ${product.name}:`, ...summary.map((s) => `• ${s}`), `Quantidade: ${qty}`, `Estimativa: ${brl(unit * qty)}`].join('\n')

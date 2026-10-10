@@ -2,7 +2,7 @@ import { AnimatePresence, MotionConfig } from 'framer-motion'
 import { useEffect } from 'react'
 import { Route, Routes, useLocation } from 'react-router-dom'
 import { AuthProvider } from './auth/AuthProvider'
-import { BottomNav, FlyLayer, Header, Toasts, WhatsAppFab } from './components/Chrome'
+import { BottomNav, FlyLayer, FloatingCartButton, Header, Toasts, WhatsAppFab } from './components/Chrome'
 import About from './pages/About'
 import Account from './pages/Account'
 import Builder from './pages/Builder'
@@ -59,6 +59,7 @@ export default function App() {
         <BottomNav />
         <WhatsAppFab />
         <FlyLayer />
+        <FloatingCartButton />
         <Toasts />
         <StylePicker />
       </AuthProvider>

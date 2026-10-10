@@ -1,6 +1,6 @@
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from 'framer-motion'
 import { useEffect, useState } from 'react'
-import { Link, NavLink, useLocation } from 'react-router-dom'
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthProvider'
 import { firstName } from '../lib/format'
 import { WA_GENERAL } from '../lib/whatsapp'
@@ -219,6 +219,39 @@ export function FlyLayer() {
         </motion.svg>
       ))}
     </>
+  )
+}
+
+/** Botão flutuante "Ir para a sacola" que aparece ao adicionar item ao carrinho. */
+export function FloatingCartButton() {
+  const goToCart = useUI((s) => s.goToCart)
+  const navigate = useNavigate()
+  const hideGoToCart = useUI((s) => s.hideGoToCart)
+
+  if (!goToCart?.visible) return null
+
+  return (
+    <AnimatePresence>
+      <motion.button
+        key={goToCart.id}
+        className="floating-cart-btn"
+        initial={{ opacity: 0, scale: 0.7, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.7, y: 20 }}
+        transition={{ type: 'spring', stiffness: 400, damping: 22, duration: 0.5 }}
+        onClick={() => {
+          hideGoToCart()
+          navigate('/sacola')
+        }}
+        aria-label="Ir para a sacola"
+      >
+        <span className="floating-cart-btn__icon">
+          <Icon name="bag" size={20} />
+        </span>
+        <span className="floating-cart-btn__text">Ver sacola</span>
+        <Icon name="arrow" size={16} className="floating-cart-btn__arrow" />
+      </motion.button>
+    </AnimatePresence>
   )
 }
 

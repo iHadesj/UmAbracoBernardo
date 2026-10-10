@@ -15,22 +15,22 @@ export function createFurUniforms() {
   return {
     uTime: { value: 0 },
     uShells: { value: 28 },
-    uDensity: { value: 60 },
+    uDensity: { value: 85 },
     uSpin: { value: 0 },
     uBounce: { value: 0 },
     uBrushStrength: { value: 0 },
-    uColor0: { value: new THREE.Color('#6E4A33') },
-    uColor1: { value: new THREE.Color('#EFE4D6') },
-    uColor2: { value: new THREE.Color('#5A3A27') },
-    uBlush: { value: new THREE.Color('#FFC2C6') },
+    uColor0: { value: new THREE.Color('#5D3A26') },
+    uColor1: { value: new THREE.Color('#F5E6D3') },
+    uColor2: { value: new THREE.Color('#E8C8A0') },
+    uBlush: { value: new THREE.Color('#FFB3BA') },
     uKeyDir: { value: KEY_DIR.clone() },
     uFillDir: { value: FILL_DIR.clone() },
     uRimDir: { value: RIM_DIR.clone() },
-    uKeyColor: { value: new THREE.Color('#fff0e0').multiplyScalar(1.05) },
-    uFillColor: { value: new THREE.Color('#ffe4d6').multiplyScalar(0.42) },
-    uRimColor: { value: new THREE.Color('#ffe0c0').multiplyScalar(0.55) },
-    uSky: { value: new THREE.Color('#fff4e8').multiplyScalar(0.38) },
-    uGround: { value: new THREE.Color('#8a6248').multiplyScalar(0.2) },
+    uKeyColor: { value: new THREE.Color('#fff0e0').multiplyScalar(1.1) },
+    uFillColor: { value: new THREE.Color('#ffe4d6').multiplyScalar(0.45) },
+    uRimColor: { value: new THREE.Color('#ffe0c0').multiplyScalar(0.6) },
+    uSky: { value: new THREE.Color('#fff4e8').multiplyScalar(0.42) },
+    uGround: { value: new THREE.Color('#8a6248').multiplyScalar(0.22) },
   }
 }
 
@@ -96,26 +96,26 @@ void main() {
   vec3 n = normalize(normal);
   vec3 p = position;
 
-  float clump = vnoise(p * 7.0);
-  float L = furLen * mix(0.8, 1.15, clump);
+  float clump = vnoise(p * 5.5);
+  float L = furLen * mix(0.85, 1.25, clump);
   float bend = h * h;
 
   vec3 disp = n * L * h;
 
   // gravidade, quique e inércia do giro: os fios "atrasam" em relação ao movimento
-  vec3 force = vec3(0.0, -0.5 - uBounce, 0.0);
-  force += vec3(-uSpin * p.z, 0.0, uSpin * p.x) * 0.16;
+  vec3 force = vec3(0.0, -0.45 - uBounce, 0.0);
+  force += vec3(-uSpin * p.z, 0.0, uSpin * p.x) * 0.18;
   force -= n * dot(force, n);
   disp += force * L * bend;
 
   // carinho: perto do ponteiro os fios deitam e seguem a direção do gesto
-  float infl = uBrushStrength * (1.0 - smoothstep(0.0, 0.5, distance(p, uBrushPos)));
+  float infl = uBrushStrength * (1.0 - smoothstep(0.0, 0.55, distance(p, uBrushPos)));
   vec3 comb = uBrushDir - n * dot(uBrushDir, n);
-  disp += comb * L * bend * infl * 2.4;
-  disp -= n * L * h * infl * 0.4;
+  disp += comb * L * bend * infl * 2.6;
+  disp -= n * L * h * infl * 0.35;
 
   // brisa bem sutil
-  disp += vec3(sin(uTime * 1.7 + p.y * 9.0 + p.x * 3.0), 0.0, cos(uTime * 1.3 + p.x * 8.0)) * L * bend * 0.12;
+  disp += vec3(sin(uTime * 1.5 + p.y * 8.5 + p.x * 2.8), 0.0, cos(uTime * 1.2 + p.x * 7.5)) * L * bend * 0.14;
 
   vec4 world = modelMatrix * vec4(p + disp, 1.0);
   vWorldPos = world.xyz;
@@ -161,33 +161,33 @@ void main() {
   const mat3 ROT = mat3(0.8, 0.36, -0.48, -0.6, 0.48, -0.64, 0.0, 0.8, 0.6);
   vec3 n = ROT * normalize(vNObj);
   // focinho e patas têm pelo mais curto e mais fino
-  float density = uDensity * (vSlot > 0.5 ? 1.15 : 1.0);
+  float density = uDensity * (vSlot > 0.5 ? 1.2 : 1.0);
   vec3 q = ROT * vBase * density;
   vec3 cell = floor(q);
   vec3 rnd = hash33(cell);
-  vec3 f = fract(q) - (0.5 + (rnd - 0.5) * 0.55);
+  vec3 f = fract(q) - (0.5 + (rnd - 0.5) * 0.5);
   f -= n * dot(f, n);
   float r = length(f) * 2.0;
 
-  float strandLen = mix(0.55, 1.0, rnd.x);
+  float strandLen = mix(0.45, 0.95, rnd.x);
   float t = vH / strandLen;
   float alpha = 1.0;
 #ifndef BASE
   if (t > 1.0) discard;
-  float radius = 1.05 * (1.0 - t * 0.85);
-  if (r > radius * 0.85) discard;
+  float radius = 1.1 * (1.0 - t * 0.82);
+  if (r > radius * 0.82) discard;
 #endif
 
   vec3 base = vSlot < 0.5 ? uColor0 : (vSlot < 1.5 ? uColor1 : uColor2);
-  base *= mix(0.93, 1.06, rnd.y) * mix(0.86, 1.08, vClump);
+  base *= mix(0.92, 1.08, rnd.y) * mix(0.88, 1.1, vClump);
   // bochechas: o pelo puxa para o rosado, mais forte nas pontas
-  base = mix(base, uBlush, vTint * mix(0.18, 0.42, vH));
-  base = mix(base, base * 1.2 + 0.012, smoothstep(0.45, 1.0, t));
+  base = mix(base, uBlush, vTint * mix(0.22, 0.5, vH));
+  base = mix(base, base * 1.22 + 0.014, smoothstep(0.4, 1.0, t));
 
   vec3 N = normalize(vNWorld);
   vec3 V = normalize(cameraPosition - vWorldPos);
-  float ao = mix(0.46, 1.0, pow(clamp(vH, 0.0, 1.0), 0.7));
-  float wrap = 0.5;
+  float ao = mix(0.42, 1.0, pow(clamp(vH, 0.0, 1.0), 0.65));
+  float wrap = 0.52;
   float kd = max((dot(N, uKeyDir) + wrap) / (1.0 + wrap), 0.0);
   float fd = max((dot(N, uFillDir) + wrap) / (1.0 + wrap), 0.0);
   vec3 hemi = mix(uGround, uSky, N.y * 0.5 + 0.5);
@@ -196,10 +196,10 @@ void main() {
   // brilho de fio (Kajiya-Kay aproximado: a tangente do fio ~ normal)
   vec3 H = normalize(uKeyDir + V);
   float th = dot(N, H);
-  col += uKeyColor * pow(sqrt(max(1.0 - th * th, 0.0)), 48.0) * 0.05 * vH;
+  col += uKeyColor * pow(sqrt(max(1.0 - th * th, 0.0)), 52.0) * 0.06 * vH;
 
   // contorno aveludado
-  float rim = pow(1.0 - max(dot(N, V), 0.0), 3.0);
+  float rim = pow(1.0 - max(dot(N, V), 0.0), 3.2);
   float back = max(dot(N, uRimDir), 0.0) * 0.5 + 0.5;
   col += uRimColor * rim * back * ao;
 

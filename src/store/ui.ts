@@ -17,6 +17,11 @@ export interface Toast {
   tone?: 'ok' | 'error'
 }
 
+export interface GoToCart {
+  id: number
+  visible: boolean
+}
+
 interface UIState {
   theme: Theme
   palette: PaletteId
@@ -26,12 +31,15 @@ interface UIState {
   hugs: number
   flyers: Flyer[]
   toasts: Toast[]
+  goToCart: GoToCart | null
   toggleTheme: () => void
   hug: () => void
   fly: (from: Element | null, color?: string) => void
   landFlyer: (id: number) => void
   toast: (text: string, tone?: Toast['tone']) => void
   dismissToast: (id: number) => void
+  showGoToCart: () => void
+  hideGoToCart: () => void
 }
 
 let seq = 0
@@ -49,6 +57,7 @@ export const useUI = create<UIState>()(
       hugs: 0,
       flyers: [],
       toasts: [],
+      goToCart: null,
       toggleTheme: () => set({ theme: get().theme === 'light' ? 'dark' : 'light' }),
       hug: () => set((s) => ({ hugs: s.hugs + 1 })),
       fly: (from, color = 'var(--red)') => {
@@ -63,6 +72,12 @@ export const useUI = create<UIState>()(
         setTimeout(() => get().dismissToast(id), 2800)
       },
       dismissToast: (id) => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),
+      showGoToCart: () => {
+        const id = ++seq
+        set({ goToCart: { id, visible: true } })
+        setTimeout(() => get().hideGoToCart(), 2500)
+      },
+      hideGoToCart: () => set({ goToCart: null }),
     }),
     { name: 'uab-ui', partialize: (s) => ({ theme: s.theme, hugs: s.hugs, palette: s.palette, fonts: s.fonts }) },
   ),

@@ -28,10 +28,10 @@ export const PALETTES = {
       arch: 'linear-gradient(170deg,#FFF2EF,#FADCDA)',
     },
     dark: {
-      bg: '#1E1418', 'bg-a': 'rgba(30,20,24,.86)', sf: '#2A1D22', soft: '#36242B', kraft: '#6B3E47',
-      tx: '#F8EAEE', ink: '#FFF1F4', mu: '#CDB2BA', red: '#F07A8C', 'red-2': '#F59AA8', 'on-red': '#1E1418',
-      tan: '#E8A0AC', leaf: '#9CBB8A', ln: 'rgba(240,122,140,.2)', bd: 'rgba(248,234,238,.12)', sh: 'rgba(0,0,0,.55)',
-      arch: 'linear-gradient(170deg,#3A252C,#281A1F)',
+      bg: '#231A1F', 'bg-a': 'rgba(35,26,31,.9)', sf: '#2D2128', soft: '#382932', kraft: '#4A3640',
+      tx: '#F5E8EC', ink: '#FFF0F4', mu: '#B8999E', red: '#D84A62', 'red-2': '#E87A90', 'on-red': '#FFF8F9',
+      tan: '#D4A5B0', leaf: '#8DB88A', ln: 'rgba(216,74,98,.15)', bd: 'rgba(245,232,236,.08)', sh: 'rgba(50,25,35,.35)',
+      arch: 'linear-gradient(170deg,#2E222A,#1F171C)',
     },
   },
   jardim: {

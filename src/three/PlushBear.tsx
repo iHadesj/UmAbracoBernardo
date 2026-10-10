@@ -23,11 +23,12 @@ const { damp, smoothstep: ss, clamp } = THREE.MathUtils
 
 /* ---------- gestos ---------- */
 
-type Gesture = 'wave' | 'hug' | 'hop' | 'tilt' | 'ears'
-const DURATION: Record<Gesture, number> = { wave: 2.6, hug: 1.7, hop: 1.1, tilt: 2.0, ears: 1.2 }
-const IDLE_GESTURES: Gesture[] = ['wave', 'tilt', 'hop', 'ears', 'tilt', 'ears', 'wave']
+type Gesture = 'wave' | 'hug' | 'hop' | 'tilt' | 'ears' | 'peek' | 'sleep' | 'curious' | 'shy'
+const DURATION: Record<Gesture, number> = { wave: 2.6, hug: 1.7, hop: 1.1, tilt: 2.0, ears: 1.2, peek: 2.2, sleep: 4.0, curious: 2.4, shy: 2.0 }
+const IDLE_GESTURES: Gesture[] = ['wave', 'tilt', 'hop', 'ears', 'tilt', 'ears', 'wave', 'peek', 'curious', 'shy']
 const TAP_LINES = ['♡', 'que abraço bom!', 'de novo!', 'hihi', '♡♡']
 const BACK_LINES = ['oi de novo!', 'voltou! ♡', 'oi!']
+const SLEEP_LINES = ['zzz...', 'dormindo...', '💤', 'sonhando com mel...']
 
 /** sobe no começo, segura, desce no fim */
 const envelope = (u: number, up = 0.15, down = 0.8) => ss(u, 0, up) * (1 - ss(u, down, 1))
@@ -155,8 +156,8 @@ export function PlushBear({
 
   const mats = useMemo(
     () => ({
-      eye: new THREE.MeshPhysicalMaterial({ color: '#120b08', roughness: 0.08, clearcoat: 1, clearcoatRoughness: 0.03 }),
-      nose: new THREE.MeshPhysicalMaterial({ color: '#2b1a12', roughness: 0.4, clearcoat: 0.5, clearcoatRoughness: 0.3 }),
+      eye: new THREE.MeshPhysicalMaterial({ color: '#0D0806', roughness: 0.05, clearcoat: 1, clearcoatRoughness: 0.02, metalness: 0.02 }),
+      nose: new THREE.MeshPhysicalMaterial({ color: '#1A100A', roughness: 0.12, clearcoat: 1, clearcoatRoughness: 0.03, metalness: 0.05, sheen: 0.8, sheenRoughness: 0.15, sheenColor: new THREE.Color('#3A2010') }),
       mouth: new THREE.MeshStandardMaterial({ color: '#2b1a12', roughness: 0.8 }),
       bean: new THREE.MeshStandardMaterial({ color: '#E9AEA8', roughness: 0.75 }),
       shine: new THREE.MeshBasicMaterial({ color: '#ffffff', toneMapped: false }),
@@ -224,9 +225,12 @@ export function PlushBear({
     }
 
     const userIdle = now - ctl.lastInteract > 3000 && now - brush.activeAt > 3000
+    const longIdle = now - ctl.lastInteract > 20000 && now - brush.activeAt > 20000
     if (!a.gesture && !a.queued && t > a.nextIdle && userIdle) {
-      start(pick(IDLE_GESTURES))
-      a.nextIdle = t + 7 + Math.random() * 5
+      const g = longIdle && Math.random() < 0.3 ? 'sleep' : pick(IDLE_GESTURES)
+      start(g)
+      if (g === 'sleep') ctl.say(pick(SLEEP_LINES))
+      a.nextIdle = t + (g === 'sleep' ? 15 : 7 + Math.random() * 5)
     }
 
     const u = a.gesture ? (t - a.gStart) / DURATION[a.gesture] : 1
@@ -277,6 +281,44 @@ export function PlushBear({
       const e = envelope(u, 0.1, 0.85)
       earZ[0] = e * Math.sin(u * Math.PI * 9) * 0.3
       earZ[1] = e * Math.sin(u * Math.PI * 9 + Math.PI) * 0.3
+    } else if (g === 'peek') {
+      const e = envelope(u, 0.18, 0.7)
+      for (const i of [0, 1]) {
+        armX[i] = -e * 1.5
+        armZ[i] = (i === 0 ? -1 : 1) * e * 0.8
+      }
+      headPitch = e * 0.25
+      headTilt = e * 0.1
+      earZ[0] = -e * 0.25
+      earZ[1] = -e * 0.25
+    } else if (g === 'sleep') {
+      const e = envelope(u, 0.3, 0.6)
+      headPitch = e * 0.35
+      headTilt = e * 0.05 * Math.sin(t * 0.8)
+      earZ[0] = -e * 0.3
+      earZ[1] = -e * 0.3
+      for (const i of [0, 1]) {
+        armX[i] = -e * 0.6
+        armZ[i] = (i === 0 ? -1 : 1) * e * 0.3
+      }
+    } else if (g === 'curious') {
+      const e = envelope(u, 0.15, 0.75)
+      headTilt = e * 0.35 * Math.sin(u * Math.PI * 3) * a.tiltDir
+      headYawExtra = e * 0.2 * Math.sin(u * Math.PI * 2)
+      earZ[0] = e * Math.sin(u * Math.PI * 5) * 0.2
+      earZ[1] = e * Math.sin(u * Math.PI * 5 + 1.5) * 0.2
+      armX[0] = e * 0.3
+      armZ[0] = e * 0.4
+    } else if (g === 'shy') {
+      const e = envelope(u, 0.2, 0.7)
+      headPitch = e * 0.2
+      headTilt = e * 0.15
+      earZ[0] = -e * 0.35
+      earZ[1] = -e * 0.35
+      for (const i of [0, 1]) {
+        armX[i] = -e * 0.8
+        armZ[i] = (i === 0 ? -1 : 1) * e * 0.4
+      }
     }
 
     /* ---- giro + inércia da pelagem ---- */
@@ -291,9 +333,14 @@ export function PlushBear({
     const tau = t - a.tapAt
     const sq = tau < 2.5 ? Math.exp(-tau * 4.5) * Math.sin(tau * 15) : 0
     const land = g === 'hop' && u > 0.8 ? Math.sin(((u - 0.8) / 0.2) * Math.PI) * 0.6 : 0
-    const breathe = Math.sin(t * 2.2) * 0.01
+    const breathe = Math.sin(t * 2.2) * 0.018
+    const breatheSlow = Math.sin(t * 0.7) * 0.008
     if (squash.current) {
-      squash.current.scale.set(1 + 0.06 * sq + 0.05 * land, 1 - 0.07 * sq + breathe - 0.06 * land, 1 + 0.06 * sq + 0.05 * land)
+      squash.current.scale.set(
+        1 + 0.06 * sq + 0.05 * land + breatheSlow,
+        1 - 0.07 * sq + breathe - 0.06 * land,
+        1 + 0.06 * sq + 0.05 * land + breatheSlow
+      )
       squash.current.position.y = damp(squash.current.position.y, hopY, 18, dt)
       squash.current.rotation.z = damp(squash.current.rotation.z, lean, 6, dt)
     }
@@ -307,11 +354,13 @@ export function PlushBear({
     /* ---- cabeça: segue o ponteiro (limitado); parado, olha em volta ---- */
     if (head.current) {
       const following = now - ctl.look.t < 2500
-      const px = following ? ctl.look.x : Math.sin(t * 0.6) * 0.45
-      const py = following ? ctl.look.y : Math.sin(t * 0.43) * 0.3
+      const px = following ? ctl.look.x : Math.sin(t * 0.6) * 0.45 + Math.sin(t * 1.7) * 0.03
+      const py = following ? ctl.look.y : Math.sin(t * 0.43) * 0.3 + Math.cos(t * 1.3) * 0.02
       const tapTilt = tau < 2 ? Math.exp(-tau * 2.2) * Math.sin(tau * 7) * 0.16 : 0
-      head.current.rotation.y = damp(head.current.rotation.y, px * 0.36 + headYawExtra, 4, dt)
-      head.current.rotation.x = damp(head.current.rotation.x, -py * 0.1 - headPitch + 0.02, 4, dt)
+      const idleMicroYaw = Math.sin(t * 0.9) * 0.015 + Math.sin(t * 2.1) * 0.008
+      const idleMicroPitch = Math.cos(t * 1.1) * 0.01
+      head.current.rotation.y = damp(head.current.rotation.y, px * 0.36 + headYawExtra + idleMicroYaw, 4, dt)
+      head.current.rotation.x = damp(head.current.rotation.x, -py * 0.1 - headPitch + 0.02 + idleMicroPitch, 4, dt)
       head.current.rotation.z = damp(head.current.rotation.z, 0.07 + tapTilt + headTilt - px * 0.05, 6, dt)
     }
 
@@ -324,7 +373,9 @@ export function PlushBear({
     })
     ears.current.forEach((ear, i) => {
       if (!ear) return
-      ear.rotation.z = damp(ear.rotation.z, earZ[i] + Math.sin(t * 1.3 + i * 2) * 0.03, 14, dt)
+      const twitch = Math.sin(t * 3.7 + i * 1.5) * 0.008 + Math.sin(t * 5.3 + i * 2.1) * 0.004
+      const sleepTwitch = g === 'sleep' ? Math.sin(t * 0.8) * 0.02 : 0
+      ear.rotation.z = damp(ear.rotation.z, earZ[i] + Math.sin(t * 1.3 + i * 2) * 0.03 + twitch + sleepTwitch, 14, dt)
     })
 
     /* ---- piscadas (e olhinhos apertados no abraço) ---- */
