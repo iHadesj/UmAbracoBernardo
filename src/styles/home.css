@@ -50,257 +50,100 @@
   color: var(--red);
 }
 
-/* ---------- 1. Abertura ---------- */
-.hero3 {
-  padding-top: 4px;
-  /* as fotos em volta do urso podem passar da coluna, nunca da tela */
+/* ---------- 1. Abertura: só o urso, a frase em volta dele e um botão ---------- */
+.hero4 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 8px;
   overflow-x: clip;
 }
 
-.hero3__grid {
-  display: grid;
-  /* minmax(0, …): a faixa de selos (sem quebra de linha) não pode alargar a coluna */
-  grid-template-columns: minmax(0, 1fr);
-  gap: 6px;
-}
-
-/* palco: a palavra no alto, o urso na frente dela e fotos de presentes dos lados */
-.hero3__stage {
+.hero4__stage {
   position: relative;
-  height: min(80vw, 330px);
-  margin: 0 -20px;
-  overflow: hidden;
+  width: min(100%, 560px);
+  aspect-ratio: 1;
+  max-height: calc(100svh - 230px);
+  min-height: 300px;
 }
 
-.hero3__word {
+/* anel de texto: a frase da marca girando devagar em volta do urso */
+.hero4__ring {
   position: absolute;
   inset: 0;
   z-index: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-top: 1%;
   pointer-events: none;
 }
 
-.hero3__um {
-  position: relative;
-  z-index: 1;
-  align-self: flex-start;
-  margin: 0 0 -0.45em 9%;
-  font-family: var(--font-hand);
-  font-size: clamp(30px, 8.5vw, 64px);
-  color: var(--red);
+.ring {
+  width: 100%;
+  height: 100%;
+  animation: ring-spin 70s linear infinite;
 }
 
-.hero3__abraco {
-  display: inline-block;
+.ring__text {
   font-family: var(--font-display);
   font-weight: var(--display-light);
-  font-style: var(--em-style);
-  font-size: clamp(92px, 27vw, 230px);
-  line-height: 0.9;
-  letter-spacing: -0.045em;
-  white-space: nowrap;
-  color: color-mix(in srgb, var(--red) 22%, var(--bg));
-  transform-origin: 50% 60%;
+  font-size: 37px;
+  letter-spacing: 0.01em;
+  fill: color-mix(in srgb, var(--ink) 58%, var(--bg));
 }
 
-/* o canvas não ocupa as laterais: assim as fotos dali continuam clicáveis */
-.hero3__bear {
+.ring__em {
+  font-style: var(--em-style);
+  fill: var(--red);
+}
+
+@keyframes ring-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ring {
+    animation: none;
+  }
+}
+
+.hero4__bear {
   position: absolute;
-  inset: 9% 15% 0;
+  inset: 12% 14% 6%;
   z-index: 1;
 }
 
-.hero3__bear .stage-fallback .art {
-  padding: 6% 8% 2%;
+.hero4__bear .stage-fallback .art {
+  padding: 4% 6% 2%;
 }
 
-.hero3__touch {
+.hero4__touch {
   position: absolute;
   z-index: 2;
   left: 50%;
-  bottom: 0;
+  bottom: -14px;
   translate: -50% 0;
   font-family: var(--font-hand);
-  font-size: calc(20px * var(--hand-scale));
+  font-size: calc(19px * var(--hand-scale));
   color: var(--red);
   white-space: nowrap;
   pointer-events: none;
 }
 
-.hero3__touch span {
+.hero4__touch span {
   display: inline-block;
 }
 
-/* polaroides de presentes em volta do urso */
-.showcase {
-  position: absolute;
-  z-index: 2;
-  width: clamp(82px, 23vw, 168px);
-}
-
-.showcase--0 {
-  top: 10%;
-  right: 3%;
-  rotate: 6deg;
-}
-
-.showcase--1 {
-  bottom: 13%;
-  left: 3%;
-  rotate: -7deg;
-}
-
-.showcase--2 {
-  display: none;
-}
-
-.showcase__card {
-  position: relative;
-  display: block;
-  padding: 5px 5px 0;
-  border-radius: 3px;
-  background: #fffefb;
-  color: #4a3434;
-  box-shadow: 0 18px 28px -18px rgba(40, 20, 20, 0.55), 0 1px 3px rgba(0, 0, 0, 0.08);
-  transition: rotate 0.35s var(--ease), translate 0.35s var(--ease), box-shadow 0.35s var(--ease);
-}
-
-.showcase__card:hover {
-  rotate: -4deg;
-  translate: 0 -4px;
-  box-shadow: 0 24px 34px -18px rgba(40, 20, 20, 0.6), 0 1px 3px rgba(0, 0, 0, 0.08);
-}
-
-.showcase__img {
-  display: block;
-  aspect-ratio: 1;
-  overflow: hidden;
-  background: linear-gradient(170deg, #fff1ee, #f5dcd7);
-}
-
-.showcase__cap {
-  display: block;
-  padding: 4px 2px 6px;
-  text-align: center;
-  font-family: var(--font-hand);
-  font-size: calc(14px * var(--hand-scale));
-  line-height: 1.1;
-}
-
-.showcase__price {
-  position: absolute;
-  top: 9px;
-  right: -9px;
-  padding: 3px 8px 3px 13px;
-  background: #ead6b4;
-  color: #3a2418;
-  font-family: var(--font-display);
-  font-size: 12px;
-  white-space: nowrap;
-  clip-path: polygon(7px 0, 100% 0, 100% 100%, 7px 100%, 0 50%);
-  filter: drop-shadow(0 4px 6px rgba(60, 30, 10, 0.18));
-}
-
-.showcase__price::before {
-  content: '';
-  position: absolute;
-  left: 5px;
-  top: 50%;
-  width: 4px;
-  height: 4px;
-  margin-top: -2px;
-  border-radius: 50%;
-  background: #fffefb;
-}
-
-.hero3__copy {
+.hero4__cta {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 12px;
-}
-
-/* no celular o endereço vai nos selos; o selo grande fica para o desktop */
-.hero3__pill {
-  display: none;
   align-items: center;
-  gap: 9px;
-  padding: 5px 12px 5px 10px;
-  border-radius: 999px;
-  background: var(--soft);
-  color: var(--ink);
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.02em;
+  gap: 10px;
+  margin-top: 30px;
 }
 
-.hero3__pill i {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--red);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--red) 18%, transparent);
-}
-
-.hero3__title {
-  font-size: clamp(28px, 6.6vw, 58px);
-  font-weight: var(--display-light);
-  line-height: 1.12;
-  letter-spacing: -0.015em;
-  max-width: 16em;
-}
-
-.hero3__lead {
-  font-size: 15px;
-  font-weight: 300;
+.hero4__note {
+  font-size: 13px;
   color: var(--mu);
-  max-width: 31em;
-}
-
-.hero3__ctas {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  flex-wrap: wrap;
-  margin-top: 4px;
-}
-
-/* no celular os selos viram uma faixa que rola de lado, logo abaixo do urso */
-.hero3__trust {
-  order: -1;
-  display: flex;
-  gap: 8px;
-  align-self: stretch;
-  margin: 2px -20px 2px;
-  padding: 2px 20px 4px;
-  list-style: none;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.hero3__trust::-webkit-scrollbar {
-  display: none;
-}
-
-.hero3__trust li {
-  flex: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 7px 12px 7px 10px;
-  border: 1px solid var(--ln);
-  border-radius: 999px;
-  font-size: 12.5px;
-  color: var(--tx);
-  white-space: nowrap;
-}
-
-.hero3__trust svg {
-  flex: none;
-  color: var(--red);
 }
 
 /* convite que aparece no 3º, 10º e 25º abraço */
@@ -733,132 +576,19 @@
   color: var(--mu);
 }
 
-/* ---------- tablet: palco mais alto, para o urso não ficar pequeno perto das fotos ---------- */
-@media (min-width: 600px) and (max-width: 959px) {
-  .hero3__stage {
-    height: 470px;
-  }
-
-  .showcase {
-    width: 150px;
-  }
-
-  .showcase--0 {
-    top: 12%;
-    right: 5%;
-  }
-
-  .showcase--1 {
-    bottom: 14%;
-    left: 5%;
-  }
-}
-
 /* ---------- desktop ---------- */
 @media (min-width: 960px) {
-  .hero3 {
-    padding-top: 8px;
+  .hero4__stage {
+    width: min(100%, 600px);
+    max-height: calc(100svh - 250px);
   }
 
-  .hero3__grid {
-    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-    grid-template-areas: 'copy stage';
-    align-items: center;
-    gap: 28px;
-  }
-
-  .hero3__stage {
-    grid-area: stage;
-    height: 640px;
-    margin: 0;
-    overflow: visible;
-  }
-
-  .hero3__copy {
-    grid-area: copy;
-    gap: 18px;
-    padding-bottom: 20px;
-  }
-
-  .hero3__title {
-    font-size: clamp(42px, 4.3vw, 58px);
-  }
-
-  .hero3__lead {
-    font-size: 17px;
-  }
-
-  .hero3__pill {
-    display: inline-flex;
-  }
-
-  .hero3__trust {
-    order: 0;
-    display: grid;
-    gap: 10px;
-    margin: 8px 0 0;
-    padding: 0;
-    overflow: visible;
-  }
-
-  .hero3__trust li {
-    padding: 0;
-    border: 0;
-    font-size: 14.5px;
-  }
-
-  .hero3__um {
-    margin-left: 6%;
-  }
-
-  .hero3__abraco {
-    font-size: 210px;
-  }
-
-  .hero3__bear {
-    inset: 17% 17% 0;
-  }
-
-  .hero3__touch {
-    font-size: calc(22px * var(--hand-scale));
-  }
-
-  .showcase--0 {
-    top: 31%;
-    right: -1%;
-  }
-
-  .showcase--1 {
-    bottom: 8%;
-    left: -3%;
-  }
-
-  .showcase--2 {
-    display: block;
-    width: 128px;
-    bottom: 2%;
-    right: 3%;
-    rotate: -4deg;
-  }
-
-  .showcase__card {
-    padding: 8px 8px 0;
-  }
-
-  .showcase__cap {
-    padding: 7px 2px 9px;
-    font-size: calc(19px * var(--hand-scale));
-  }
-
-  .showcase__price {
-    top: 14px;
-    right: -12px;
-    padding: 4px 10px 4px 15px;
-    font-size: 15px;
+  .hero4__touch {
+    font-size: calc(21px * var(--hand-scale));
   }
 
   .rail {
-    margin-top: 36px;
+    margin-top: 56px;
   }
 
   .rail__track > :nth-child(n + 5) {
@@ -913,20 +643,5 @@
   .mural__track {
     justify-content: center;
     overflow: visible;
-  }
-}
-
-/* com sobra de tela fora do container, as fotos podem abrir mais */
-@media (min-width: 1280px) {
-  .showcase--0 {
-    right: -7%;
-  }
-
-  .showcase--1 {
-    left: -7%;
-  }
-
-  .showcase--2 {
-    right: -1%;
   }
 }
