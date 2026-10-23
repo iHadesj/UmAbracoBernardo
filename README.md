@@ -79,11 +79,14 @@ os preços reais.
 
 ## 3D
 
-- **Urso** (`src/three/PlushBear.tsx`): modelado proceduralmente a partir da pelúcia de
-  referência (`design-reference/urso-referencia.png`). A pelagem usa *shell texturing*
-  (`src/three/furMaterial.ts`): os fios balançam com a inércia do giro, quicam no
-  "abraço" e deitam onde o dedo ou o mouse passa. Arraste para girar e toque para abraçar.
-  A cor da pelúcia e a do laço mudam ao vivo.
+- **Urso** (`src/three/PlushBear.tsx`): esculpido por campos de distância (SDF, em
+  `src/three/sdf.ts` e `bearGeometry.ts`) com as proporções da pelúcia de referência
+  (`design-reference/urso-referencia.png`): bochechas e focinho fundidos na cabeça, orelhas em
+  concha, braços abertos, pés com sola achatada, nariz e boca bordados. A malha é gerada num
+  Web Worker (`bearParts.worker.ts`) para não travar a página. A pelagem usa *shell texturing*
+  (`src/three/furMaterial.ts`) com os fios agrupados em mechas: balançam com a inércia do giro,
+  quicam no "abraço" e deitam onde o dedo ou o mouse passa. Arraste para girar e toque para
+  abraçar. A cor da pelúcia e a do laço mudam ao vivo.
 - **Bubble** (`src/three/BubbleBalloon.tsx`): balão cristal com nome e idade aplicados na
   curvatura e mini balões de látex que chacoalham ao toque.
 - O 3D é carregado sob demanda (chunk separado), pausa quando sai da tela e reduz a

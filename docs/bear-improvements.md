@@ -1,6 +1,6 @@
 # Plano de Melhorias do Urso 3D
 
-> Última atualização: 2026-10-10
+> Última atualização: 2026-10-23
 
 ---
 
@@ -8,12 +8,12 @@
 
 | Área | Implementação | Qualidade |
 |------|--------------|-----------|
-| **Geometria** | Elipsoides procedurais (corpo, cabeça, focinho, pernas, braços, orelhas) | Boa base, mas "genérica" |
-| **Pelagem** | Shell texturing (28-32 camadas) + shaders customizados | Boa, mas pode ser mais realista/performática |
+| **Geometria** | SDF com fusões suaves (cabeça + bochechas + focinho, corpo + pernas + pés, orelha em concha) gerada em Web Worker | Proporções da pelúcia de referência |
+| **Pelagem** | Shell texturing (24-32 camadas) com fios em mechas, sombra de contato e ruído pré-calculado por vértice | Fio mais grosso, sem "chiado" |
 | **Animações** | 5 gestos (wave, hug, hop, tilt, ears) + idle aleatório + respiração | Funcional, mas repetitivo |
 | **Interação** | Carinho (brush) + tap (hug) + head follow pointer | Básica |
 | **Expressividade** | Piscadas + olhos apertados no abraço | Limitada |
-| **Acessórios** | Laço fixo + coleira + almofadinhas nas patas | Estático |
+| **Acessórios** | Laço com pontas assentadas no peito + fita no pescoço; nariz, boca e unhas bordados | Estático |
 
 ---
 
@@ -75,6 +75,14 @@
 - ✅ **1.5** Nariz: MeshPhysicalMaterial com clearcoat 1.0, clearcoatRoughness 0.05, sheen para brilho úmido
 - ✅ **2.1** 4 novos gestos: `peek` (esconde rosto), `sleep` (dorme), `curious` (inclina cabeça), `shy` (orelhas para baixo)
 - ✅ **2.4** Micro-expressões: respiração no corpo (scale Y), orelhas tremendo sutil, head micro-movements
+
+### 2026-10-23 — Formato realista e pelagem em mechas
+- ✅ **Formato**: geometria refeita por SDF + surface nets (`sdf.ts`), seguindo as medidas da foto de referência: focinho maior e saliente fundido no rosto, bochechas cheias, orelhas em concha nos cantos da cabeça, braços grossos abertos para os lados, coxas que viram pés com sola grande e achatada
+- ✅ **Pelagem**: densidade 85→66 (fio mais grosso), fio só afina perto da ponta, mechas que convergem e abrem vão entre si, pontas mais claras e menos saturadas, brilho Kajiya-Kay na direção real do fio, sombra de contato calculada pelo SDF (pescoço, axilas, base do focinho)
+- ✅ **Rosto de ursinho de infância**: nariz bordado em ponto cheio (relevo por textura), boca e unhas bordadas no lugar das almofadinhas rosas, olhos com um reflexo principal, pelo aparado em volta dos olhos, bochecha só com um calor rosado
+- ✅ **Laço**: pontas geradas sobre a superfície do peito (antes ficavam dentro do pelo)
+- ✅ **Desempenho**: malha gerada num Web Worker; ruído do pelo pré-calculado por vértice (o vertex shader não calcula mais 4 ruídos por camada); grade grossa + refino só perto da superfície
+- ✅ **Gestos**: abraço, espiar, dormir e tímido fecham os braços para dentro (agora eles descansam abertos)
 
 ---
 

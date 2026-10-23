@@ -1,7 +1,7 @@
 import { useFrame, type ThreeEvent } from '@react-three/fiber'
 import { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
-import { BOW_POS, buildBear, buildBow, buildCollar, COLLAR, NECK } from './bearGeometry'
+import { buildBear, buildBow, buildCollar, buildNose, createStitchTexture, type FurParts } from './bearGeometry'
 import { createFurMaterial, createFurUniforms, type FurUniforms, type PartUniforms } from './furMaterial'
 import { stepYaw, useStageClock, type StageController } from './stage'
 
@@ -109,19 +109,26 @@ function creamFor(fur: string) {
 /* ---------- urso ---------- */
 
 export function PlushBear({
+  parts,
   look,
   ctl,
   shells,
   onTap,
 }: {
+  parts: FurParts
   look: BearLook
   ctl: StageController
   shells: number
   onTap: (clientX: number, clientY: number) => void
 }) {
-  const geo = useMemo(buildBear, [])
+  const geo = useMemo(() => buildBear(parts), [parts])
   const bow = useMemo(buildBow, [])
-  const collar = useMemo(buildCollar, [])
+  const collar = useMemo(() => buildCollar(geo.collar), [geo])
+  // as malhas saem das partes em cache a cada montagem: libera as da GPU ao desmontar
+  useEffect(
+    () => () => [geo.body, geo.head, geo.mouth, geo.claws, geo.bowTails, collar, ...geo.arms.map((a) => a.geo), ...geo.ears.map((e) => e.geo)].forEach((g) => g.dispose()),
+    [geo, collar],
+  )
   const shared = useMemo(createFurUniforms, [])
   const brush = useMemo<Brush>(
     () => ({ point: new THREE.Vector3(99, 99, 99), dir: new THREE.Vector3(), last: new THREE.Vector3(), lastT: 0, activeAt: 0 }),
@@ -154,12 +161,21 @@ export function PlushBear({
     }
   }, [look.ribbon, ribbonMat, tailMat])
 
+  const noseGeo = useMemo(buildNose, [])
   const mats = useMemo(
     () => ({
-      eye: new THREE.MeshPhysicalMaterial({ color: '#0D0806', roughness: 0.05, clearcoat: 1, clearcoatRoughness: 0.02, metalness: 0.02 }),
-      nose: new THREE.MeshPhysicalMaterial({ color: '#1A100A', roughness: 0.12, clearcoat: 1, clearcoatRoughness: 0.03, metalness: 0.05, sheen: 0.8, sheenRoughness: 0.15, sheenColor: new THREE.Color('#3A2010') }),
-      mouth: new THREE.MeshStandardMaterial({ color: '#2b1a12', roughness: 0.8 }),
-      bean: new THREE.MeshStandardMaterial({ color: '#E9AEA8', roughness: 0.75 }),
+      eye: new THREE.MeshPhysicalMaterial({ color: '#0D0806', roughness: 0.06, clearcoat: 1, clearcoatRoughness: 0.03, metalness: 0.02 }),
+      // nariz bordado em ponto cheio: linha acetinada, cada ponto com o seu brilho
+      nose: new THREE.MeshPhysicalMaterial({
+        color: '#2E1A10',
+        roughness: 0.55,
+        bumpMap: createStitchTexture(15),
+        bumpScale: 1.4,
+        sheen: 1,
+        sheenRoughness: 0.4,
+        sheenColor: new THREE.Color('#9A6A4E'),
+      }),
+      thread: new THREE.MeshStandardMaterial({ color: '#2E1A10', roughness: 0.85 }),
       shine: new THREE.MeshBasicMaterial({ color: '#ffffff', toneMapped: false }),
     }),
     [],
@@ -257,9 +273,10 @@ export function PlushBear({
       earZ[1] = e * Math.sin(u * Math.PI * 6) * 0.15
     } else if (g === 'hug') {
       const e = envelope(u, 0.16, 0.7)
+      // os braços descansam abertos: no abraço fecham para frente e para dentro
       for (const i of [0, 1]) {
-        armX[i] = -e * 1.2
-        armZ[i] = (i === 0 ? -1 : 1) * e * 0.5
+        armX[i] = -e * 1.15
+        armZ[i] = (i === 0 ? 1 : -1) * e * 0.55
       }
       headPitch = e * 0.12
       earZ[0] = -e * 0.12
@@ -283,9 +300,10 @@ export function PlushBear({
       earZ[1] = e * Math.sin(u * Math.PI * 9 + Math.PI) * 0.3
     } else if (g === 'peek') {
       const e = envelope(u, 0.18, 0.7)
+      // patinhas juntas embaixo do queixo
       for (const i of [0, 1]) {
-        armX[i] = -e * 1.5
-        armZ[i] = (i === 0 ? -1 : 1) * e * 0.8
+        armX[i] = -e * 1.6
+        armZ[i] = (i === 0 ? 1 : -1) * e * 0.5
       }
       headPitch = e * 0.25
       headTilt = e * 0.1
@@ -299,7 +317,7 @@ export function PlushBear({
       earZ[1] = -e * 0.3
       for (const i of [0, 1]) {
         armX[i] = -e * 0.6
-        armZ[i] = (i === 0 ? -1 : 1) * e * 0.3
+        armZ[i] = (i === 0 ? 1 : -1) * e * 0.35
       }
     } else if (g === 'curious') {
       const e = envelope(u, 0.15, 0.75)
@@ -316,8 +334,8 @@ export function PlushBear({
       earZ[0] = -e * 0.35
       earZ[1] = -e * 0.35
       for (const i of [0, 1]) {
-        armX[i] = -e * 0.8
-        armZ[i] = (i === 0 ? -1 : 1) * e * 0.4
+        armX[i] = -e * 0.9
+        armZ[i] = (i === 0 ? 1 : -1) * e * 0.45
       }
     }
 
@@ -393,11 +411,7 @@ export function PlushBear({
     <group ref={root}>
       <group ref={squash}>
         <FurPart geometry={geo.body} shared={shared} shells={shells} brush={brush} ctl={ctl} onTap={handleTap} />
-        {geo.beans.map((b, i) => (
-          <mesh key={i} position={b.pos} quaternion={b.quat} scale={b.scale} material={mats.bean}>
-            <sphereGeometry args={[1, 18, 12]} />
-          </mesh>
-        ))}
+        <mesh geometry={geo.claws} material={mats.thread} />
 
         {geo.arms.map((arm, i) => (
           <group key={i} position={arm.pivot} ref={(g) => void (arms.current[i] = g)}>
@@ -405,7 +419,7 @@ export function PlushBear({
           </group>
         ))}
 
-        <group ref={head} position={NECK}>
+        <group ref={head} position={geo.neck}>
           <FurPart geometry={geo.head} shared={shared} shells={shells} brush={brush} ctl={ctl} onTap={handleTap} />
           {geo.ears.map((ear, i) => (
             <group key={i} position={ear.pivot} ref={(g) => void (ears.current[i] = g)}>
@@ -414,33 +428,31 @@ export function PlushBear({
           ))}
           {geo.eyes.map((e, i) => (
             <group key={i} position={e.pos} quaternion={e.quat} ref={(g) => void (eyes.current[i] = g)}>
-              <mesh material={mats.eye} scale={[0.088, 0.096, 0.056]}>
+              <mesh material={mats.eye} scale={[0.082, 0.088, 0.054]}>
                 <sphereGeometry args={[1, 28, 20]} />
               </mesh>
-              {/* dois brilhos deixam o olhar "vivo" */}
-              <mesh position={[-0.028, 0.034, 0.046]} material={mats.shine}>
-                <sphereGeometry args={[0.024, 12, 10]} />
+              {/* olho de plástico de pelúcia: um reflexo principal e um bem pequeno */}
+              <mesh position={[-0.025, 0.03, 0.045]} scale={[1, 1.15, 0.6]} material={mats.shine}>
+                <sphereGeometry args={[0.019, 12, 10]} />
               </mesh>
-              <mesh position={[0.026, -0.026, 0.05]} material={mats.shine}>
-                <sphereGeometry args={[0.011, 10, 8]} />
+              <mesh position={[0.024, -0.024, 0.048]} material={mats.shine}>
+                <sphereGeometry args={[0.007, 8, 6]} />
               </mesh>
             </group>
           ))}
-          <group position={geo.nose} rotation={[-0.2, 0, 0]}>
-            <mesh scale={[0.1, 0.068, 0.064]} material={mats.nose}>
-              <sphereGeometry args={[1, 24, 16]} />
-            </mesh>
+          <group position={geo.nose.pos} quaternion={geo.nose.quat}>
+            <mesh geometry={noseGeo} material={mats.nose} />
           </group>
-          <mesh geometry={geo.mouth} material={mats.mouth} />
+          <mesh geometry={geo.mouth} material={mats.thread} />
         </group>
 
-        <group position={[0, COLLAR.y, COLLAR.z]} rotation={[0.12, 0, 0]}>
+        <group position={[0, geo.collar.y, geo.collar.z]} rotation={[0.12, 0, 0]}>
           <mesh geometry={collar} material={ribbonMat} />
         </group>
-        <group position={BOW_POS} rotation={[0.16, 0, 0]}>
+        <group position={geo.bow} rotation={[0.16, 0, 0]} scale={1.3}>
           <mesh geometry={bow.loops} material={ribbonMat} />
-          <mesh geometry={bow.tails} material={tailMat} />
         </group>
+        <mesh geometry={geo.bowTails} material={tailMat} />
       </group>
     </group>
   )

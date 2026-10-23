@@ -1,9 +1,10 @@
-import { AnimatePresence, motion, useAnimate, useScroll, useTransform } from 'framer-motion'
+import { AnimatePresence, LayoutGroup, motion, useAnimate, useScroll, useTransform } from 'framer-motion'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useCepLookup } from '../components/CepChecker'
-import { Icon } from '../components/Icon'
-import { bouncy, Page } from '../components/motion'
+import { Icon, type IconName } from '../components/Icon'
+import { bouncy, Page, staggerChild, staggerParent } from '../components/motion'
+import { ProductCard } from '../components/ProductCard'
 import { ProductStage } from '../components/ProductStage'
 import { ProductVisual } from '../components/ProductVisual'
 import { defaultSelection, getProduct, MASCOT, PRODUCTS, type Occasion, type Product } from '../data/products'
@@ -24,8 +25,46 @@ const REWARDS = [
 ]
 
 /* ------------------------------------------------------------------ */
-/* 1. Palco: "abraço" gigante atrás do urso                            */
+/* 1. Vitrine de abertura: o urso entre presentes de verdade           */
 /* ------------------------------------------------------------------ */
+
+/** fotos de produtos "penduradas" em volta do urso (no celular, só as duas primeiras) */
+const SHOWCASE = [
+  { id: 'bubble-urso-aniversario', label: 'bubble com ursinho' },
+  { id: 'box-amor', label: 'box amor' },
+  { id: 'buque-urso-algodao', label: 'buquê de algodão' },
+]
+
+// no celular estes selos vão para o topo do texto (e o de endereço aparece só lá)
+const TRUST: { icon: IconName; text: string; mobile?: boolean }[] = [
+  { icon: 'pin', text: 'Ateliê no Grajaú · SP', mobile: true },
+  { icon: 'truck', text: 'Mesmo dia no Grajaú, pedindo até 14h' },
+  { icon: 'heart', text: 'Montado à mão, com bilhete escrito' },
+  { icon: 'whatsapp', text: 'Pedido e pagamento pelo WhatsApp' },
+]
+
+function ShowcasePolaroid({ id, label, i }: { id: string; label: string; i: number }) {
+  const p = getProduct(id)!
+  return (
+    <motion.div
+      className={`showcase showcase--${i}`}
+      initial={{ opacity: 0, y: 28, scale: 0.9 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ delay: 0.8 + i * 0.15, type: 'spring', stiffness: 150, damping: 16 }}
+    >
+      {/* flutua devagar, cada uma num ritmo */}
+      <motion.div animate={{ y: [0, -7, 0] }} transition={{ duration: 4.6 + i * 0.9, repeat: Infinity, ease: 'easeInOut', delay: 1.6 + i * 0.7 }}>
+        <Link to={`/produto/${id}`} className="showcase__card" aria-label={`${p.name}, ${brl(p.price)}`} draggable={false}>
+          <span className="showcase__img">
+            <ProductVisual product={p} sizes="(min-width: 960px) 170px, 100px" eager />
+          </span>
+          <span className="showcase__cap">{label}</span>
+          <span className="showcase__price">{brl(p.price).replace(',00', '')}</span>
+        </Link>
+      </motion.div>
+    </motion.div>
+  )
+}
 
 function Hero() {
   const bear = MASCOT
@@ -52,94 +91,135 @@ function Hero() {
   }, [hugs, animateWord, word])
 
   return (
-    <section className="hero2" ref={ref}>
-      <div className="container hero2__meta">
-        <span>Ateliê de presentes</span>
-        <span>Grajaú · SP</span>
-      </div>
+    <section className="hero3" ref={ref}>
+      <div className="container hero3__grid">
+        <div className="hero3__stage">
+          <motion.div className="hero3__word" style={{ y: wordY }} aria-hidden="true">
+            <motion.span className="hero3__um" initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5, duration: 0.6 }}>
+              um
+            </motion.span>
+            <span ref={word} className="hero3__abraco">
+              {'abraço'.split('').map((l, i) => (
+                <motion.span
+                  key={i}
+                  style={{ display: 'inline-block' }}
+                  initial={{ y: '60%', opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.15 + i * 0.07, duration: 0.8, ease: EASE }}
+                >
+                  {l}
+                </motion.span>
+              ))}
+            </span>
+          </motion.div>
 
-      <div className="hero2__stage">
-        <motion.div className="hero2__word" style={{ y: wordY }} aria-hidden="true">
-          <motion.span className="hero2__um" initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5, duration: 0.6 }}>
-            um
-          </motion.span>
-          <span ref={word} className="hero2__abraco">
-            {'abraço'.split('').map((l, i) => (
-              <motion.span
-                key={i}
-                style={{ display: 'inline-block' }}
-                initial={{ y: '60%', opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.15 + i * 0.07, duration: 0.8, ease: EASE }}
+          <motion.div className="hero3__bear" style={{ y: bearY }} initial={{ opacity: 0, scale: 0.92 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.35, duration: 0.9, ease: EASE }}>
+            <ProductStage product={bear} selection={defaultSelection(bear)} hint="" />
+          </motion.div>
+
+          {SHOWCASE.map((s, i) => (
+            <ShowcasePolaroid key={s.id} {...s} i={i} />
+          ))}
+
+          <AnimatePresence mode="wait">
+            {hugs === 0 ? (
+              <motion.div key="hint" className="hero3__touch" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ delay: 1.4 }}>
+                {mouse ? 'clique nele ou arraste' : 'toque nele'} ♡
+              </motion.div>
+            ) : (
+              <motion.div key="count" className="hero3__touch" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
+                <motion.span key={hugs} initial={{ scale: 1.4 }} animate={{ scale: 1 }} transition={bouncy}>
+                  {hugs}
+                </motion.span>{' '}
+                {hugs === 1 ? 'abraço dado' : 'abraços dados'} ♡
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {reward && (
+              <motion.div
+                key={reward.at}
+                className="hug-reward"
+                role="status"
+                initial={{ opacity: 0, y: 24, scale: 0.9, rotate: -3 }}
+                animate={{ opacity: 1, y: 0, scale: 1, rotate: -1.5 }}
+                exit={{ opacity: 0, y: 12, scale: 0.95 }}
+                transition={bouncy}
               >
-                {l}
-              </motion.span>
-            ))}
-          </span>
-        </motion.div>
+                <button className="hug-reward__close" onClick={() => setClosedAt(reward.at)} aria-label="Fechar">
+                  <Icon name="close" size={14} />
+                </button>
+                <b>{reward.title}</b>
+                <span>{reward.text}</span>
+                <Link to="/monte" className="btn btn--primary btn--sm">
+                  Monte um presente <Icon name="arrow" size={15} />
+                </Link>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
 
-        <motion.div className="hero2__bear" style={{ y: bearY }} initial={{ opacity: 0, scale: 0.92 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.35, duration: 0.9, ease: EASE }}>
-          <ProductStage product={bear} selection={defaultSelection(bear)} hint="" />
-        </motion.div>
-
-        <AnimatePresence mode="wait">
-          {hugs === 0 ? (
-            <motion.div key="hint" className="hero2__touch" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, y: -6 }} transition={{ delay: 1.2 }}>
-              {mouse ? 'clique nele ou arraste' : 'toque nele'}
-              <svg width="58" height="46" viewBox="0 0 58 46" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round">
-                <motion.path d="M52 4C50 22 36 34 10 38" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ delay: 1.5, duration: 0.8 }} />
-                <motion.path d="M17 31l-8 7 10 3" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ delay: 2.2, duration: 0.3 }} />
-              </svg>
-            </motion.div>
-          ) : (
-            <motion.div key="count" className="hero2__touch hero2__touch--count" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
-              <motion.span key={hugs} initial={{ scale: 1.4 }} animate={{ scale: 1 }} transition={bouncy}>
-                {hugs}
-              </motion.span>{' '}
-              {hugs === 1 ? 'abraço dado' : 'abraços dados'} ♡
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <AnimatePresence>
-          {reward && (
-            <motion.div
-              key={reward.at}
-              className="hug-reward"
-              role="status"
-              initial={{ opacity: 0, y: 24, scale: 0.9, rotate: -3 }}
-              animate={{ opacity: 1, y: 0, scale: 1, rotate: -1.5 }}
-              exit={{ opacity: 0, y: 12, scale: 0.95 }}
-              transition={bouncy}
-            >
-              <button className="hug-reward__close" onClick={() => setClosedAt(reward.at)} aria-label="Fechar">
-                <Icon name="close" size={14} />
-              </button>
-              <b>{reward.title}</b>
-              <span>{reward.text}</span>
-              <Link to="/monte" className="btn btn--primary btn--sm">
-                Monte um presente <Icon name="arrow" size={15} />
+        <div className="hero3__copy">
+          <motion.span className="hero3__pill" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.6, ease: EASE }}>
+            <i aria-hidden="true" /> Ateliê de presentes no Grajaú · SP
+          </motion.span>
+          <motion.h1 className="hero3__title" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6, duration: 0.7, ease: EASE }}>
+            Presentes montados à mão, para quem merece um <em>abraço</em> de perto.
+          </motion.h1>
+          <motion.p className="hero3__lead" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.75, duration: 0.7, ease: EASE }}>
+            Ursos de pelúcia, balões bubble e buquês personalizados. Você escolhe aqui e fecha o pedido pelo WhatsApp.
+          </motion.p>
+          <motion.div className="hero3__ctas" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9 }}>
+            <motion.div whileTap={{ scale: 0.97 }}>
+              <Link to="/presentes" className="btn btn--primary">
+                Ver os presentes <Icon name="arrow" size={17} />
               </Link>
             </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-
-      <div className="container hero2__foot">
-        <motion.h1 className="hero2__title" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7, duration: 0.7, ease: EASE }}>
-          Presentes montados à mão, para quem merece um abraço de perto.
-        </motion.h1>
-        <motion.div className="hero2__ctas" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.95 }}>
-          <motion.div whileTap={{ scale: 0.97 }}>
-            <Link to="/presentes" className="btn btn--primary">
-              Escolher um presente
+            <Link to="/monte" className="link-arrow">
+              ou monte o seu <Icon name="arrow" size={16} />
             </Link>
           </motion.div>
-          <Link to="/monte" className="link-arrow">
-            ou monte o seu <Icon name="arrow" size={16} />
-          </Link>
-        </motion.div>
+          <motion.ul className="hero3__trust" initial="hidden" animate="show" variants={{ show: { transition: { staggerChildren: 0.08, delayChildren: 1.05 } } }}>
+            {TRUST.map((t) => (
+              <motion.li key={t.icon} className={t.mobile ? 'mobile-only' : undefined} variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } }}>
+                <Icon name={t.icon} size={17} />
+                {t.text}
+              </motion.li>
+            ))}
+          </motion.ul>
+        </div>
       </div>
+    </section>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/* 1b. Os mais pedidos, logo abaixo da abertura                        */
+/* ------------------------------------------------------------------ */
+
+function BestSellers() {
+  const list = useMemo(() => [...PRODUCTS].sort((a, b) => Number(!!b.featured) - Number(!!a.featured)), [])
+  return (
+    <section className="container rail" aria-labelledby="mais-pedidos">
+      <div className="rail__head">
+        <motion.h2 id="mais-pedidos" className="sec-title" initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
+          Os mais pedidos
+        </motion.h2>
+        <Link to="/presentes" className="link-arrow">
+          Ver todos <Icon name="arrow" size={15} />
+        </Link>
+      </div>
+      {/* layoutId próprio: os cards daqui não se confundem com as sugestões mais abaixo */}
+      <LayoutGroup id="mais-pedidos">
+        <motion.div className="carousel rail__track" initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.15 }} variants={staggerParent}>
+          {list.map((p) => (
+            <motion.div key={p.id} variants={staggerChild}>
+              <ProductCard product={p} />
+            </motion.div>
+          ))}
+        </motion.div>
+      </LayoutGroup>
     </section>
   )
 }
@@ -438,6 +518,7 @@ export default function Home() {
   return (
     <Page className="home">
       <Hero />
+      <BestSellers />
       <GiftSentence />
       <NoteCard />
       <Delivery />

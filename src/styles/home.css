@@ -50,104 +50,257 @@
   color: var(--red);
 }
 
-/* ---------- 1. Palco ---------- */
-.hero2 {
-  padding-top: 14px;
+/* ---------- 1. Abertura ---------- */
+.hero3 {
+  padding-top: 4px;
+  /* as fotos em volta do urso podem passar da coluna, nunca da tela */
+  overflow-x: clip;
 }
 
-.hero2__meta {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--ln);
-  font-size: 10.5px;
-  font-weight: 500;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--mu);
+.hero3__grid {
+  display: grid;
+  /* minmax(0, …): a faixa de selos (sem quebra de linha) não pode alargar a coluna */
+  grid-template-columns: minmax(0, 1fr);
+  gap: 6px;
 }
 
-.hero2__stage {
+/* palco: a palavra no alto, o urso na frente dela e fotos de presentes dos lados */
+.hero3__stage {
   position: relative;
-  height: min(122vw, 540px);
+  height: min(80vw, 330px);
+  margin: 0 -20px;
   overflow: hidden;
 }
 
-/* como capa de revista: a palavra no alto e a cabeça do urso cobrindo a parte de baixo dela */
-.hero2__word {
+.hero3__word {
   position: absolute;
   inset: 0;
   z-index: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  padding-top: 3%;
+  padding-top: 1%;
   pointer-events: none;
 }
 
-.hero2__um {
+.hero3__um {
   position: relative;
   z-index: 1;
   align-self: flex-start;
-  margin: 0 0 -0.42em 7%;
+  margin: 0 0 -0.45em 9%;
   font-family: var(--font-hand);
-  font-size: clamp(34px, 10vw, 72px);
+  font-size: clamp(30px, 8.5vw, 64px);
   color: var(--red);
 }
 
-.hero2__abraco {
+.hero3__abraco {
   display: inline-block;
   font-family: var(--font-display);
   font-weight: var(--display-light);
   font-style: var(--em-style);
-  font-size: clamp(104px, 32vw, 340px);
+  font-size: clamp(92px, 27vw, 230px);
   line-height: 0.9;
   letter-spacing: -0.045em;
   white-space: nowrap;
-  color: color-mix(in srgb, var(--red) 24%, var(--bg));
+  color: color-mix(in srgb, var(--red) 22%, var(--bg));
   transform-origin: 50% 60%;
 }
 
-.hero2__bear {
+/* o canvas não ocupa as laterais: assim as fotos dali continuam clicáveis */
+.hero3__bear {
   position: absolute;
-  inset: 17% 0 0;
+  inset: 9% 15% 0;
   z-index: 1;
 }
 
-.hero2__bear .stage-fallback .art {
-  padding: 10% 20% 2%;
+.hero3__bear .stage-fallback .art {
+  padding: 6% 8% 2%;
 }
 
-.hero2__touch {
+.hero3__touch {
   position: absolute;
   z-index: 2;
-  right: 4%;
-  top: 56%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+  left: 50%;
+  bottom: 0;
+  translate: -50% 0;
   font-family: var(--font-hand);
-  font-size: calc(25px * var(--hand-scale));
+  font-size: calc(20px * var(--hand-scale));
   color: var(--red);
+  white-space: nowrap;
   pointer-events: none;
 }
 
-.hero2__touch svg {
-  margin-right: 22px;
-}
-
-.hero2__touch--count {
-  top: auto;
-  bottom: 18px;
-  right: 20px;
-  flex-direction: row;
-  font-size: calc(22px * var(--hand-scale));
-}
-
-.hero2__touch--count span {
+.hero3__touch span {
   display: inline-block;
+}
+
+/* polaroides de presentes em volta do urso */
+.showcase {
+  position: absolute;
+  z-index: 2;
+  width: clamp(82px, 23vw, 168px);
+}
+
+.showcase--0 {
+  top: 10%;
+  right: 3%;
+  rotate: 6deg;
+}
+
+.showcase--1 {
+  bottom: 13%;
+  left: 3%;
+  rotate: -7deg;
+}
+
+.showcase--2 {
+  display: none;
+}
+
+.showcase__card {
+  position: relative;
+  display: block;
+  padding: 5px 5px 0;
+  border-radius: 3px;
+  background: #fffefb;
+  color: #4a3434;
+  box-shadow: 0 18px 28px -18px rgba(40, 20, 20, 0.55), 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: rotate 0.35s var(--ease), translate 0.35s var(--ease), box-shadow 0.35s var(--ease);
+}
+
+.showcase__card:hover {
+  rotate: -4deg;
+  translate: 0 -4px;
+  box-shadow: 0 24px 34px -18px rgba(40, 20, 20, 0.6), 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.showcase__img {
+  display: block;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: linear-gradient(170deg, #fff1ee, #f5dcd7);
+}
+
+.showcase__cap {
+  display: block;
+  padding: 4px 2px 6px;
+  text-align: center;
+  font-family: var(--font-hand);
+  font-size: calc(14px * var(--hand-scale));
+  line-height: 1.1;
+}
+
+.showcase__price {
+  position: absolute;
+  top: 9px;
+  right: -9px;
+  padding: 3px 8px 3px 13px;
+  background: #ead6b4;
+  color: #3a2418;
+  font-family: var(--font-display);
+  font-size: 12px;
+  white-space: nowrap;
+  clip-path: polygon(7px 0, 100% 0, 100% 100%, 7px 100%, 0 50%);
+  filter: drop-shadow(0 4px 6px rgba(60, 30, 10, 0.18));
+}
+
+.showcase__price::before {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 50%;
+  width: 4px;
+  height: 4px;
+  margin-top: -2px;
+  border-radius: 50%;
+  background: #fffefb;
+}
+
+.hero3__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+/* no celular o endereço vai nos selos; o selo grande fica para o desktop */
+.hero3__pill {
+  display: none;
+  align-items: center;
+  gap: 9px;
+  padding: 5px 12px 5px 10px;
+  border-radius: 999px;
+  background: var(--soft);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.hero3__pill i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--red);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--red) 18%, transparent);
+}
+
+.hero3__title {
+  font-size: clamp(28px, 6.6vw, 58px);
+  font-weight: var(--display-light);
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  max-width: 16em;
+}
+
+.hero3__lead {
+  font-size: 15px;
+  font-weight: 300;
+  color: var(--mu);
+  max-width: 31em;
+}
+
+.hero3__ctas {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+/* no celular os selos viram uma faixa que rola de lado, logo abaixo do urso */
+.hero3__trust {
+  order: -1;
+  display: flex;
+  gap: 8px;
+  align-self: stretch;
+  margin: 2px -20px 2px;
+  padding: 2px 20px 4px;
+  list-style: none;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.hero3__trust::-webkit-scrollbar {
+  display: none;
+}
+
+.hero3__trust li {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px 7px 10px;
+  border: 1px solid var(--ln);
+  border-radius: 999px;
+  font-size: 12.5px;
+  color: var(--tx);
+  white-space: nowrap;
+}
+
+.hero3__trust svg {
+  flex: none;
+  color: var(--red);
 }
 
 /* convite que aparece no 3º, 10º e 25º abraço */
@@ -197,30 +350,26 @@
   cursor: pointer;
 }
 
-.hero2__foot {
-  display: grid;
-  gap: 22px;
-  padding-top: 6px;
+/* ---------- 1b. Mais pedidos ---------- */
+.rail {
+  margin-top: 40px;
 }
 
-.hero2__title {
-  font-size: clamp(25px, 6.8vw, 40px);
-  font-weight: var(--display-light);
-  line-height: 1.2;
-  letter-spacing: -0.012em;
-  max-width: 15em;
-}
-
-.hero2__ctas {
+.rail__head {
   display: flex;
-  align-items: center;
-  gap: 22px;
-  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.rail__track {
+  grid-auto-columns: 46%;
 }
 
 /* ---------- 2. Frase + sugestões ---------- */
 .gift {
-  margin-top: 88px;
+  margin-top: 76px;
 }
 
 .pick-inline {
@@ -584,36 +733,140 @@
   color: var(--mu);
 }
 
+/* ---------- tablet: palco mais alto, para o urso não ficar pequeno perto das fotos ---------- */
+@media (min-width: 600px) and (max-width: 959px) {
+  .hero3__stage {
+    height: 470px;
+  }
+
+  .showcase {
+    width: 150px;
+  }
+
+  .showcase--0 {
+    top: 12%;
+    right: 5%;
+  }
+
+  .showcase--1 {
+    bottom: 14%;
+    left: 5%;
+  }
+}
+
 /* ---------- desktop ---------- */
 @media (min-width: 960px) {
-  .hero2__stage {
+  .hero3 {
+    padding-top: 8px;
+  }
+
+  .hero3__grid {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    grid-template-areas: 'copy stage';
+    align-items: center;
+    gap: 28px;
+  }
+
+  .hero3__stage {
+    grid-area: stage;
     height: 640px;
+    margin: 0;
+    overflow: visible;
   }
 
-  .hero2__word {
-    padding-top: 1%;
+  .hero3__copy {
+    grid-area: copy;
+    gap: 18px;
+    padding-bottom: 20px;
   }
 
-  .hero2__bear {
-    inset: 20% 0 0;
+  .hero3__title {
+    font-size: clamp(42px, 4.3vw, 58px);
   }
 
-  .hero2__um {
-    margin-left: 18%;
+  .hero3__lead {
+    font-size: 17px;
   }
 
-  .hero2__touch {
-    right: 24%;
-    top: 58%;
+  .hero3__pill {
+    display: inline-flex;
   }
 
-  .hero2__foot {
-    grid-template-columns: 1fr auto;
-    align-items: end;
+  .hero3__trust {
+    order: 0;
+    display: grid;
+    gap: 10px;
+    margin: 8px 0 0;
+    padding: 0;
+    overflow: visible;
+  }
+
+  .hero3__trust li {
+    padding: 0;
+    border: 0;
+    font-size: 14.5px;
+  }
+
+  .hero3__um {
+    margin-left: 6%;
+  }
+
+  .hero3__abraco {
+    font-size: 210px;
+  }
+
+  .hero3__bear {
+    inset: 17% 17% 0;
+  }
+
+  .hero3__touch {
+    font-size: calc(22px * var(--hand-scale));
+  }
+
+  .showcase--0 {
+    top: 31%;
+    right: -1%;
+  }
+
+  .showcase--1 {
+    bottom: 8%;
+    left: -3%;
+  }
+
+  .showcase--2 {
+    display: block;
+    width: 128px;
+    bottom: 2%;
+    right: 3%;
+    rotate: -4deg;
+  }
+
+  .showcase__card {
+    padding: 8px 8px 0;
+  }
+
+  .showcase__cap {
+    padding: 7px 2px 9px;
+    font-size: calc(19px * var(--hand-scale));
+  }
+
+  .showcase__price {
+    top: 14px;
+    right: -12px;
+    padding: 4px 10px 4px 15px;
+    font-size: 15px;
+  }
+
+  .rail {
+    margin-top: 36px;
+  }
+
+  .rail__track > :nth-child(n + 5) {
+    display: none;
   }
 
   .gift {
-    margin-top: 130px;
+    margin-top: 120px;
   }
 
   .picks {
@@ -646,16 +899,34 @@
     margin-top: 150px;
   }
 
-  .mural__track {
-    justify-content: center;
-    overflow: visible;
-  }
-
   .polaroid {
     width: 220px;
   }
 
   .signoff {
     padding-bottom: 72px;
+  }
+}
+
+/* as 5 polaroides do mural só cabem centralizadas daqui para cima; antes disso, deslizam de lado */
+@media (min-width: 1200px) {
+  .mural__track {
+    justify-content: center;
+    overflow: visible;
+  }
+}
+
+/* com sobra de tela fora do container, as fotos podem abrir mais */
+@media (min-width: 1280px) {
+  .showcase--0 {
+    right: -7%;
+  }
+
+  .showcase--1 {
+    left: -7%;
+  }
+
+  .showcase--2 {
+    right: -1%;
   }
 }
